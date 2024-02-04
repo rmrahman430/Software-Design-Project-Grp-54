@@ -1,5 +1,5 @@
-Group members: 
+Group members: Rayyan Rahman
 
-1.
+1. Since predicting the fuel rate based on the client profile is the primary goal of the application, I will first complete the formula for how the prediction will function based on the stated criteria, specifically the percentage distribution of how each criterion will contribute to the anticipated fuel rate. Next, in order to determine who will use the program, what features (software components) each user can access, and what are the precise expectations for each feature's behavior when it is used or performed, I will draft a user story document. To map out the application's internal structure, I'd create a UML class diagram starting with key classes like Client, Quote, and FuelPriceModel. Each class holds specific attributes (data) and methods (actions). Relationships like "Client has a Profile" or "QuoteService uses FuelPriceModel" connect these classes, showing how they interact. Inheritance could be used for different client types or quote categories. Further details like data types, access levels, and operation parameters refine the design.
 2.
 3.
