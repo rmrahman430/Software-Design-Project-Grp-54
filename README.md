@@ -1,3 +1,7 @@
+# WARNING
+
+When you clone the repo, run "npm -i" and then ng serve, this will download the node_modules. 
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
