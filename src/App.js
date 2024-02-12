@@ -1,15 +1,14 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LoginScreen from './pages/login'; // Import your LoginScreen component
 
 const App = () => {
   return (
     <Router>
       <div>
-        <Switch>
+        <Routes>
           <Route path="/" exact component={LoginScreen} />
-          {/* Add more routes for other pages as needed */}
-        </Switch>
+        </Routes>
       </div>
     </Router>
   );
