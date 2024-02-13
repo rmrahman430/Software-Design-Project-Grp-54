@@ -1,0 +1,51 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em;
+    padding-left: 5em;
+    padding-right: 5em;
+    background-color: #B4B4B8;
+    color: white;
+
+}
+
+header img {
+    position: absolute;
+    top: 1px;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+}
+
+body {
+    background-color: #F2EFE5;
+}
+
+nav {
+    display: flex;
+    gap: 1em;
+}
+
+button {
+    padding: 0.5em 1em;
+    color: white;
+    background-color: transparent;
+    border: none;
+}
+
+li {
+    list-style-type: none;
+}
+
+header a {
+    text-decoration: none;
+    color: white;
+}
+
+
+.AboutUs {
+    margin: 1em;
+    text-align: center;
+}
+
