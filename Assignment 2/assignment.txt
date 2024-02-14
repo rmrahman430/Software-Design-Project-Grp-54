@@ -1,1 +1,6 @@
-Group Names: Rayyan Rahman
+Group Names: Rayyan Rahman, Abdul Sami Ahmed, Edin Sehic, Wilson Huang
+
+1. https://github.com/rmrahman430/Software-Design-Project-Grp-54/tree/master
+2.
+3. We are using React Bootstrap for our frontend. They are both extremely popular frontend frameworks for website development and React Bootstrap provides React components that are pre-styled with Bootstrap's CSS. This makes it easy to integrate Bootstrap components into your React applications without having to write custom CSS. Rayyan was responsible for implementing the user login page. 
+4. 
