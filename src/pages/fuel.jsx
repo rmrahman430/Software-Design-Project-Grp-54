@@ -2,7 +2,10 @@ import React from 'react';
 
 const fuelPage = () => {
     return(
-        <h> Fuel Quote Page </h>
+        <div className="fuelPage"> 
+            <h> Fuel Quote Page </h>
+        </div>
+        
     );
 };
 
