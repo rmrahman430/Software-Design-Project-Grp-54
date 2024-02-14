@@ -9,30 +9,22 @@ import "./App.css";
 const App = () => {
   return (
     <Router>
-      <div>
-
-
-        <Routes>
-          <Route
-            path = "/"
-            element = {<About/>}
-          />
-
-          <Route
-            path = "/login"
-            element = {<LoginScreen />}
-          />
-
-          <Route
-            path = "/fuel"
-            element = {<FuelScreen />}
-          />
-
-        </Routes>
-
-      </Router>
-
-
+      <Header/>
+      <Routes> {/* Corrected import to use Routes */}
+        <Route
+          path = "/"
+          element = {<About/>}
+        />
+        <Route
+          path = "/login"
+          element = {<LoginScreen />}
+        />
+        <Route
+          path = "/fuel"
+          element = {<FuelScreen />}
+        />
+      </Routes>
+    </Router>
   );
 };
 
