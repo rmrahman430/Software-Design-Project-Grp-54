@@ -1,90 +1,77 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-class FuelPage extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            gallonsRequested: '',
-            deliveryDate: '',
-            //No suggested price for now
-            suggestedPrice: '',
-        };
-        this.gallonsRequestedChange = this.gallonsRequestedChange.bind(this);
-        this.deliveryDateChange = this.deliveryDateChange.bind(this);
-    }
+const Fuel = () => {
+  const navigate = useNavigate();
+  // Initialize suggestedPrice with a placeholder value for demonstration
+  const suggestedPrice = 2.5; // Placeholder price per gallon
 
-    gallonsRequestedChange(e) {
-        this.setState({
-            gallonsRequested: e.target.value
-        });
-    }
+  const [formState, setFormState] = useState({
+    gallonsRequested: '',
+    deliveryDate: '',
+    totalAmountDue: 0, // Initially set to 0, will be calculated
+  });
 
-    deliveryDateChange(e) {
-        this.setState({
-            deliveryDate: e.target.value
-        });
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Assuming you would calculate totalAmountDue here based on gallonsRequested and suggestedPrice
+    const totalAmountDue = formState.gallonsRequested * suggestedPrice;
+    setFormState({ ...formState, totalAmountDue });
 
-    // Dummy function to calculate total amount due
-    calculateTotalAmountDue = () => {
-        const { gallonsRequested, suggestedPrice } = this.state;
-        const total = gallonsRequested * suggestedPrice;
-        return total;
-    };
+    console.log('Form submitted with state:', formState);
+    // Navigate to the Fuel Quote History page after setting the state
+    // Use setTimeout to ensure state is updated before navigation
+    setTimeout(() => navigate('/fuel-quote-history'), 0);
+  };
 
-    render() {
-        const { gallonsRequested, deliveryDate } = this.state;
-        const deliveryAddress = 'placeholder';
-        
-        return (
-            <div className="fuelPage">
-                <h> Fuel Quote Page </h>
-                <form>
-                    <div>
-                        <label>Gallons Requested:</label>
-                        <input 
-                            type="number" 
-                            value={gallonsRequested} 
-                            onChange={this.gallonsRequestedChange} 
-                            required 
-                        />
-                    </div>
-                    <div>
-                        <label>Delivery Address:</label>
-                        <input 
-                            type="text" 
-                            value={deliveryAddress} 
-                            readOnly 
-                        />
-                    </div>
-                    <div>
-                        <label>Delivery Date:</label>
-                        <input 
-                            type="date" 
-                            value={deliveryDate} 
-                            onChange={this.deliveryDateChange} 
-                        />
-                    </div>
-                    <div>
-                        <label>Suggested Price / gallon:</label>
-                        <input 
-                            type="number" 
-                            value={this.state.suggestedPrice} 
-                            readOnly 
-                        />
-                    </div>
-                    <div>
-                        <label>Total Amount Due:</label>
-                        <input 
-                            type="number" 
-                            value={this.calculateTotalAmountDue()} 
-                            readOnly 
-                        />
-                    </div>
-                </form>
-            </div>
-        );
-    }
-}
+  const handleChange = (e) => {
+    setFormState({ ...formState, [e.target.name]: e.target.value });
+  };
 
-export default FuelPage;
+  return (
+    <div className="fuelPage">
+      <h2>Fuel Quote Page</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Gallons Requested:</label>
+          <input
+            type="number"
+            name="gallonsRequested"
+            value={formState.gallonsRequested}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Delivery Date:</label>
+          <input
+            type="date"
+            name="deliveryDate"
+            value={formState.deliveryDate}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Suggested Price / gallon:</label>
+          <input
+            type="text"
+            value={`$${suggestedPrice.toFixed(2)}`} // Display the placeholder suggested price
+            readOnly
+          />
+        </div>
+        <div>
+          <label>Total Amount Due:</label>
+          <input
+            type="text"
+            value={`$${formState.totalAmountDue.toFixed(2)}`} // Calculate and display total amount due
+            readOnly
+          />
+        </div>
+        <button type="submit" className="submitBtn">Submit Quote</button>
+      </form>
+    </div>
+  );
+};
+
+export default Fuel;
