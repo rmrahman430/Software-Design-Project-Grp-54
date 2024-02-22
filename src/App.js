@@ -16,12 +16,12 @@ function App() {
     <Router>
       <Header />
       <Routes>
-        <Route path="/" element={<Login />} /> {/* Set Login as the default route */}
+        <Route path="/" element={<Login />} /> {}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile-management" element={<ProfileManagement />} />
         <Route path="/fuel-quote" element={<FuelQuote />} />
-        <Route path="/fuel-quote-history" element={<FuelQuoteHistory quotes={[]} />} /> {/* Placeholder for quotes */}
+        <Route path="/fuel-quote-history" element={<FuelQuoteHistory quotes={[]} />} /> {}
         <Route path="/about-us" element={<AboutSection />} /> {/* Route for AboutSection */}
 
       </Routes>
