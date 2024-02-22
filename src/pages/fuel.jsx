@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 const Fuel = () => {
   const navigate = useNavigate();
-  // Initialize suggestedPrice with a placeholder value for demonstration
   const suggestedPrice = 2.5; // Placeholder price per gallon
 
   const [formState, setFormState] = useState({
@@ -14,7 +13,6 @@ const Fuel = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Assuming you would calculate totalAmountDue here based on gallonsRequested and suggestedPrice
     const totalAmountDue = formState.gallonsRequested * suggestedPrice;
     setFormState({ ...formState, totalAmountDue });
 
