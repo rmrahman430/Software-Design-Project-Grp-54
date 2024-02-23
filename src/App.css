@@ -1,26 +1,28 @@
 /*app.css*/
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1em;
-    padding-left: 5em;
-    padding-right: 5em;
-    background-color: transparent;
-    color: black;
+  display: flex;
+  justify-content: space-between;
+  margin: 5px;
+  padding-top: 1em;
+  padding-left: 1em;
+  color: white;
 }
 
-.logo{
-    display: block;
-    margin: 0 auto;
-    padding-left: 42px;
-    width: 0px;
+nav {
+  display: flex;
+  gap: 1em;
 }
 
-img{
-    width: 50px;
+li {
+  display: inline-flex;
+  list-style-type: none;
+  padding-right: 1em;
 }
 
+header a {
+  text-decoration: none;
+  color: black;
+}
 
 .AboutUs {
     height: 90vh;
@@ -30,21 +32,6 @@ img{
     background-repeat: no-repeat;
     background-size: cover;
     border-radius: 30px;
-}
-
-nav {
-    display: flex;
-    gap: 1em;
-    color: black;
-}
-
-li {
-    list-style-type: none;
-}
-
-header a {
-    text-decoration: none;
-    color: black;
 }
 
 .fuelPage {
@@ -64,7 +51,6 @@ header a {
     
 }
 
-<<<<<<< HEAD
 .AboutUs .slogan {
     position: absolute;
     margin: auto;
@@ -90,7 +76,6 @@ header a {
 }
 
 
-=======
 .registration-container {
     max-width: 400px; 
     margin: 2em auto; 
@@ -202,4 +187,3 @@ header a {
 
 
   
->>>>>>> master

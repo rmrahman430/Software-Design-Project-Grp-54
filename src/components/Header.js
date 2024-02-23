@@ -1,31 +1,25 @@
 //Header.js
 import React from 'react';
 import { Link } from "react-router-dom";
-import logo from '../assets/oilrig.png';
  
 const Header = () => {
     return (
         <header>
-            <div className="websiteName">
-                <Link to="/about-us">group name</Link>
-            </div>
-
-            <div className="logo">
-                <Link to="/about-us">
-                    <img src={logo} alt="logo"/>
-                </Link>
-            </div>
-
+            <li> <Link to="/about-us"> group name </Link> </li>
+        
             <nav>
                 <ul>
                     <li>
                         <Link to="/fuel-quote">Fuel Quote</Link>
                     </li>
                     <li>
-                        <Link to="/login">Login/Signup</Link>
+                        <Link to="/fuel-quote-history">Fuel Quote History</Link>
                     </li>
                     <li>
-                        <Link to="/fuel-quote-history">Fuel Quote History</Link>
+                        <Link to="/profile">Profile</Link>
+                    </li>
+                    <li>
+                        <Link to="/login">Login/Signup</Link>
                     </li>
                 </ul>
             </nav>
