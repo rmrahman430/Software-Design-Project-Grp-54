@@ -1,6 +1,6 @@
 # WARNING
 
-When you clone the repo, run "npm -i" and then ng serve, this will download the node_modules. 
+When you clone the repo, run "npm i".
 
 # Getting Started with Create React App
 
