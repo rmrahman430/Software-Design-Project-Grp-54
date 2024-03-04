@@ -6,6 +6,8 @@ const Registration = () => {
   const [userData, setUserData] = useState({
     username: '',
     password: '',
+    name: '',
+    email: '',
   });
 
   const navigate = useNavigate();
@@ -18,11 +20,27 @@ const Registration = () => {
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log('Submitting:', userData);
-    navigate('/login');
+    try {
+      const response = await fetch('http://localhost:3001/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        console.log('Registration successful:', userData);
+        navigate('/login');
+      } else {
+        console.error('Registration failed:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Registration error:', error.message);
+    }
   };
 
   return (
@@ -51,7 +69,28 @@ const Registration = () => {
             required
           />
         </div>
-        
+        <div>
+          <label htmlFor="name">Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={userData.name}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={userData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
         <button type="submit">Register</button>
       </form>
     </div>

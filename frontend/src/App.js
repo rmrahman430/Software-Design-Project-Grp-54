@@ -7,22 +7,23 @@ import ProfileManagement from './pages/profileManagement';
 import FuelQuote from './pages/fuel';
 import FuelQuoteHistory from './pages/fuelQuoteHistory';
 import AboutSection from './components/AboutSection';
+import axios from 'axios';
 import "./App.css";
+import { userAgent } from 'next/server';
 
 function App() {
-  const [backend, backendData] = useState([{}]);
+  const [users, setUsers] = useState([{}]);
 
 
   // Fetch data from the backend (replace with your actual API endpoint)
   useEffect(() => {
-    fetch('/') // Replace with your actual API endpoint
-      .then(response => response.json())
-      .then(data => backendData(data))
+    axios.get('http://localhost:3001/getUsers') // Replace with your actual API endpoint
+      .then(users => setUsers(users.data))
       .catch(error => console.error(error));
   }, []);
-  
 
   return (
+
     <Router>
       <Header />
       <div>
