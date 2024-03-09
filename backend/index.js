@@ -7,7 +7,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect("mongodb+srv://willysonhuang:UciroAheAMVqWqGU@singhproject.dfoslf8.mongodb.net/singhproject?retryWrites=true&w=majority");
+const uri = require("./config/keys").mongoURI;
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true})
+    .then( () => console.log("MongoDB successfully connected"))
+    .catch(err => console.log(err));
 
 app.post('/register', async (req, res) => {
   try {
