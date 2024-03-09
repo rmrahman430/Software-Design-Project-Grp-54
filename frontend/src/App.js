@@ -9,7 +9,7 @@ import FuelQuoteHistory from './pages/fuelQuoteHistory';
 import AboutSection from './components/AboutSection';
 import axios from 'axios';
 import "./App.css";
-import { userAgent } from 'next/server';
+
 
 function App() {
   const [users, setUsers] = useState([{}]);
