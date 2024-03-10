@@ -9,6 +9,7 @@ app.use(express.json());
 
 mongoose.connect("mongodb+srv://willysonhuang:UciroAheAMVqWqGU@singhproject.dfoslf8.mongodb.net/singhproject?retryWrites=true&w=majority");
 
+
 app.post('/register', async (req, res) => {
   try {
     const { username, password, name, email, age } = req.body;

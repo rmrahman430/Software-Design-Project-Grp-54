@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Form, Button, Card, Container } from "react-bootstrap";
 
 const ProfileManagement = () => {
+
   const navigate = useNavigate();
   const [profile, setProfile] = useState({
     fullName: '',

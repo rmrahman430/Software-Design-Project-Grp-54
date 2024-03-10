@@ -45,10 +45,11 @@ const Registration = () => {
 
   return (
     <div className="registration-container">
-      <h2>Register</h2>
+      <h2>Create your account</h2>
+
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="username">Username:</label>
+          <label htmlFor="username">Username</label>
           <input
             type="text"
             id="username"
@@ -59,7 +60,7 @@ const Registration = () => {
           />
         </div>
         <div>
-          <label htmlFor="password">Password:</label>
+          <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
@@ -70,7 +71,7 @@ const Registration = () => {
           />
         </div>
         <div>
-          <label htmlFor="name">Name:</label>
+          <label htmlFor="name">Name</label>
           <input
             type="text"
             id="name"
@@ -81,7 +82,7 @@ const Registration = () => {
           />
         </div>
         <div>
-          <label htmlFor="email">Email:</label>
+          <label htmlFor="email">Email</label>
           <input
             type="email"
             id="email"
@@ -91,7 +92,7 @@ const Registration = () => {
             required
           />
         </div>
-        <button type="submit">Register</button>
+        <button type="submit">Create your account</button>
       </form>
     </div>
   );

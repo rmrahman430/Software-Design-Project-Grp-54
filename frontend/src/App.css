@@ -99,12 +99,15 @@ header a {
   .registration-container label {
     margin-bottom: 0.5em;
     color: #333333; 
+    padding-right: 20em;
+    font-weight: bold;
   }
   
   .registration-container input {
     padding: 0.5em;
     border: 1px solid #cccccc; 
     border-radius: 4px; 
+    width: 100%;
   }
   
   .registration-container button {
