@@ -1,4 +1,4 @@
-const userModel = require("../Models/UserModel");
+const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 
 const maxAge = 3*24*60*60;
