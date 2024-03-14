@@ -44,6 +44,13 @@ const ProfileManagement = () => {
     }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Profile Data:', profile);
+
+    navigate('/fuel-quote');
+  };
+
   const states = ["NY", "CA", "TX", "FL", "PA"]; 
 
   const logOut = () => {
