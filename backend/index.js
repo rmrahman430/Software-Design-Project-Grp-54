@@ -1,24 +1,21 @@
 const express = require('express');
 const cors = require('cors');
+const userModel = require('./models/userModel');
+const clientInfo = require('./models/ClientInfo');
 const mongoose = require('mongoose');
 const authRoutes = require('./Routes/AuthRoutes');
 const cookieParser = require('cookie-parser');
 
 const app = express();
 
-
 app.listen(4000, () => {
   console.log("Server Started on PORT 4000");
 });
 
-mongoose.connect("mongodb+srv://willysonhuang:UciroAheAMVqWqGU@singhproject.dfoslf8.mongodb.net/singhproject?retryWrites=true&w=majority", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
-  console.log("DB Connection Successful!")
-}).catch(err => {
-  console.log(err.message);
-});
+const uri = require("./config/keys").mongoURI;
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true})
+    .then( () => console.log("MongoDB successfully connected"))
+    .catch(err => console.log(err));
 
 app.use(cors({
   origin: ["http://localhost:3000"],
