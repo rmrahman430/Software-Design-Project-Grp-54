@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const userModel = require('./models/userModel');
+const clientInfo = require('./models/ClientInfo');
 
 const app = express();
 app.use(cors());
@@ -14,18 +15,21 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true})
 
 app.post('/register', async (req, res) => {
   try {
-    const { username, password, name, email, age } = req.body;
+    const { username, password, name, email} = req.body;
 
 
     const newUser = new userModel({
       username,
       password,
       name,
-      email,
-      age,
+      email
     });
 
-    await newUser.save();
+    const newProfile = new clientInfo ({
+      fullname: name
+    })
+
+    await Promise.all([newUser.save(), newProfile.save()]);
 
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
@@ -43,6 +47,18 @@ app.get('/getUsers', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// incomplete code
+/*
+app.get('/userProfile', async (req, res) => {
+  try {
+    const profile
+  } catch(err) {
+    console.error('Error fetching user profile:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
+*/
 
 app.listen(3001, () => {
   console.log("Server is running on port 3001");
