@@ -1,45 +1,44 @@
-//registration.jsx
+//registration.jsx 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+
 
 const Registration = () => {
-  const [userData, setUserData] = useState({
+  const navigate = useNavigate();
+  const [values, setValues] = useState({
     username: '',
     password: '',
     name: '',
     email: '',
   });
 
-  const navigate = useNavigate();
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setUserData(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const generateError = (error) =>
+    toast.error(error, {
+      position: "bottom-right",
+    });
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
+      const { data } = await axios.post("http://localhost:4000/register", {
+        ...values, 
+      },{
+        withCredentials: true,
       });
-
-      if (response.ok) {
-        console.log('Registration successful:', userData);
-        navigate('/login');
-      } else {
-        console.error('Registration failed:', response.statusText);
+      if (data) {
+        if(data.errors) {
+          const { username, password, email } = data.errors;
+          if(username) generateError(username);
+          if(email) generateError(email);
+          else if (password) generateError(password);
+        } else {
+          navigate("/login");
+        }
       }
-    } catch (error) {
-      console.error('Registration error:', error.message);
+    } catch(err) {
+      console.log(err);
     }
   };
 
@@ -47,15 +46,14 @@ const Registration = () => {
     <div className="registration-container">
       <h2>Create your account</h2>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={(e) => handleSubmit(e)}>
         <div>
           <label htmlFor="username">Username</label>
           <input
             type="text"
             id="username"
             name="username"
-            value={userData.username}
-            onChange={handleChange}
+            onChange= {(e) => setValues({...values, [e.target.name]: e.target.value})}
             required
           />
         </div>
@@ -65,8 +63,7 @@ const Registration = () => {
             type="password"
             id="password"
             name="password"
-            value={userData.password}
-            onChange={handleChange}
+            onChange= {(e) => setValues({...values, [e.target.name]: e.target.value})}
             required
           />
         </div>
@@ -76,8 +73,7 @@ const Registration = () => {
             type="text"
             id="name"
             name="name"
-            value={userData.name}
-            onChange={handleChange}
+            onChange= {(e) => setValues({...values, [e.target.name]: e.target.value})}
             required
           />
         </div>
@@ -87,13 +83,13 @@ const Registration = () => {
             type="email"
             id="email"
             name="email"
-            value={userData.email}
-            onChange={handleChange}
+            onChange= {(e) => setValues({...values, [e.target.name]: e.target.value})}
             required
           />
         </div>
         <button type="submit">Create your account</button>
       </form>
+      <ToastContainer />
     </div>
   );
 };

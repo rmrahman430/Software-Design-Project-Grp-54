@@ -1,51 +1,44 @@
-import React, {useState} from "react";
 import "bootstrap/dist/css/bootstrap.min.css"
+import React, { useState, useEffect } from "react";
 import { Form, Button, Card, Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
+
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [error, setError] = useState("");
+  const [values, setValues] = useState({ email: "", password: "" });
 
-  const [loginData, setLoginData] = useState({
-    username: '',
-    password: '',
-  });
-  
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setLoginData(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-  
+  const generateError = (error) =>
+    toast.error(error, {
+      position: "bottom-right",
+    });
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const { data } = await axios.post(
+        "http://localhost:4000/login",
+        {
+          ...values,
         },
-        body: JSON.stringify(loginData),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Login successful:', data);
-        navigate('/profile'); 
-      } else {
-        console.error('Login failed:', await response.text());
-        const errorMessage = await response.json();
-        setError(errorMessage.error);
+        { withCredentials: true }
+      );
+      if (data) {
+        if (data.errors) {
+          const { username, password } = data.errors;
+          if (username) generateError(username);
+          else if (password) generateError(password);
+        } else {
+          navigate("/profile");
+          window.location.reload();
+        }
       }
-    } catch (error) {
-      console.error('Login error:', error.message);
-      setError("Incorrect Username or Password.");
-
+    } catch (ex) {
+      console.log(ex);
     }
   };
-
   return (
 
     <Container>
@@ -53,15 +46,14 @@ const LoginPage = () => {
         <Card style={{ width: '40rem' }}>
           <Card.Body>
             <div className="m-4">
-              <Form onSubmit={handleSubmit}>
+              <Form onSubmit={(e) => handleSubmit(e)}>
                 <Form.Group controlId="formBasicUsername">
                   <div style={{display: 'flex', justifyContent: 'center'}}>
                     <Form.Control
                       type="text"
                       placeholder="Username"
                       name="username"
-                      value={loginData.username}
-                      onChange={handleChange}
+                      onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                       required
                       style={{width: '200px'}}
                       className="form-control-sm"/>
@@ -79,19 +71,12 @@ const LoginPage = () => {
                   type="password" 
                   placeholder="Password" 
                   name="password"
-                  value={loginData.password}
-                  onChange={handleChange}
+                  onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                   required
                   style={{width: '200px'}}
                   className="form-control-sm"/>
                 </div>
                 </Form.Group>
-
-                {error && (
-                  <div style={{ color: 'red', textAlign: 'center', marginBottom: '10px', fontSize: 'large' }}>
-                    {error}
-                  </div>
-                )}
 
                 <div style={{display: 'flex', justifyContent: 'center', paddingTop: "10px"}}>
                   <Button variant="primary" type="submit">
@@ -106,6 +91,7 @@ const LoginPage = () => {
             </div>
           </Card.Body>
         </Card>
+        <ToastContainer />
       </div>
     </Container>
   );
