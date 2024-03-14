@@ -16,7 +16,7 @@ const Registration = () => {
 
   const generateError = (error) =>
     toast.error(error, {
-      position: "bottom-right",
+      position: "top-left",
     });
   
   const handleSubmit = async (e) => {

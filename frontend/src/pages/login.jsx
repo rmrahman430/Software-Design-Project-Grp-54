@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css"
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Form, Button, Card, Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -12,7 +12,7 @@ const LoginPage = () => {
 
   const generateError = (error) =>
     toast.error(error, {
-      position: "bottom-right",
+      position: "top-left",
     });
 
   const handleSubmit = async (event) => {
