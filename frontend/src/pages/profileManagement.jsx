@@ -1,9 +1,32 @@
 //profileManagement.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Button, Card, Container } from "react-bootstrap";
+import { useCookies } from 'react-cookie';
+import axios from 'axios';
 
 const ProfileManagement = () => {
+
+  const navigate = useNavigate();
+  const [cookies, setCookie, removeCookie] = useCookies([]);
+
+  useEffect(() => {
+    const verifyUser = async () => {
+      if(!cookies.jwt) {
+        navigate("/login");
+      } else {
+        const { data } = await axios.post("http://localhost:4000/profile", {}, { withCredentials: true});
+        if(!data.status) {
+          removeCookie("jwt");
+          navigate("/login");
+        } else {
+          console.log('success');
+        };
+      }
+    };
+    verifyUser();
+  }, [cookies, navigate, removeCookie]) 
+
   const [profile, setProfile] = useState({
     fullName: '',
     address1: '',
@@ -21,29 +44,13 @@ const ProfileManagement = () => {
     }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    try {
-      const response = await fetch('http://localhost:3001/userProfile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profile),
-      });
-
-      if (response.ok) {
-        console.log('Profile update successful:', profile);
-      } else {
-        console.error('Profile update failed:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Profile error:', error.message);
-    }
-  };
-
   const states = ["NY", "CA", "TX", "FL", "PA"]; 
+
+  const logOut = () => {
+    removeCookie("jwt");
+    navigate('/login');
+    window.location.reload();
+  }
 
   return (
     <Container>
@@ -136,9 +143,18 @@ const ProfileManagement = () => {
                   </Form.Text>
                 </Form.Group>
 
-                <Button variant="primary" type="submit">
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>   
+
+                <Button variant="primary" type="submit" style={{ width: '30%' }}>
                   Submit
                 </Button>
+
+                <Button className="private" type="submit" onClick={logOut} style={{ width: '30%' }}> 
+                  Log Out 
+                </Button>
+
+                </div>
+                
                 
               </Form>
             </div>
