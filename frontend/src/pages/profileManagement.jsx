@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Form, Button, Card, Container } from "react-bootstrap";
 
 const ProfileManagement = () => {
-  const navigate = useNavigate();
   const [profile, setProfile] = useState({
     fullName: '',
     address1: '',
@@ -22,11 +21,26 @@ const ProfileManagement = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Profile Data:', profile);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-    navigate('/fuel-quote');
+    try {
+      const response = await fetch('http://localhost:3001/userProfile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profile),
+      });
+
+      if (response.ok) {
+        console.log('Profile update successful:', profile);
+      } else {
+        console.error('Profile update failed:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Profile error:', error.message);
+    }
   };
 
   const states = ["NY", "CA", "TX", "FL", "PA"]; 
