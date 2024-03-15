@@ -1,7 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const userModel = require('./models/userModel');
-const clientInfo = require('./models/ClientInfo');
 const mongoose = require('mongoose');
 const authRoutes = require('./Routes/AuthRoutes');
 const cookieParser = require('cookie-parser');
