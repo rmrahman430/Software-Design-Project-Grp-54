@@ -3,12 +3,18 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Button, Card, Container } from "react-bootstrap";
 import { useCookies } from 'react-cookie';
+import { ToastContainer, toast } from "react-toastify";
 import axios from 'axios';
 
 const ProfileManagement = () => {
 
   const navigate = useNavigate();
-  const [cookies, setCookie, removeCookie] = useCookies([]);
+  const [cookies, removeCookie] = useCookies([]);
+
+  const generateError = (error) =>
+    toast.error(error, {
+      position: "top-left",
+    });
 
   useEffect(() => {
     const verifyUser = async () => {
@@ -44,11 +50,33 @@ const ProfileManagement = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Profile Data:', profile);
-
-    navigate('/fuel-quote');
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const { data } = await axios.post(
+        "http://localhost:4000/profile",
+        {
+          ...profile,
+        },
+        { withCredentials: true }
+      );
+      if (data) {
+        if (data.errors) {
+          const { fullName, address1, address2, city, state, zipcode} = data.errors;
+          if (fullName) generateError(fullName);
+          else if (address1) generateError(address1);
+          else if (address2) generateError(address2);
+          else if (city) generateError(city);
+          else if (state) generateError(state);
+          else if (zipcode) generateError(zipcode);
+        } else {
+          navigate("/profile");
+          window.location.reload();
+        }
+      }
+    } catch (error) {
+      console.log('Error:', error);
+    }
   };
 
   const states = ["NY", "CA", "TX", "FL", "PA"]; 
@@ -167,6 +195,7 @@ const ProfileManagement = () => {
             </div>
           </Card.Body>
         </Card>
+        <ToastContainer />
       </div>
     </Container>
   );

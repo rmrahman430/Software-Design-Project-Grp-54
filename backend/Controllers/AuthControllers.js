@@ -1,5 +1,8 @@
 const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
+const clientInfo = require("../models/ClientInfo");
+const profileCheck = require("../validation/profile");
+const { checkUser } = require("../Middlewares/AuthMiddlewares");
 
 const maxAge = 3*24*60*60;
 
@@ -73,6 +76,34 @@ module.exports.login = async (req, res, next) => {
     } catch(err) {
         console.log(err);
         const errors = handleErrors(err);
+        res.json({ errors, created: false })
+    }
+};
+
+module.exports.profile = async (req, res, next) => {
+    try {
+      const { errors, isValid } = profileCheck(req.body);
+      const loggedInUser = checkUser(req.user);
+
+      if (!loggedInUser) {
+        return res.status(401).json({ message: 'Unauthorized: Please log in first' });
+      }
+  
+      if (!isValid) {
+        return res.status(400).json(errors)
+      }
+  
+      const { fullname, address1, address2, city, state, zipcode} = req.body;
+      const userProfile = await clientInfo.create( {fullname, address1, address2, city, state, zipcode});
+
+      if (userProfile) {
+        res.json({ message: 'Profile information updated successfully!' });
+      } else {
+        res.status(400).json({ message: 'Failed to update profile' });
+      }
+    }
+    catch (err) {
+        console.log(err);
         res.json({ errors, created: false })
     }
 };
