@@ -1,0 +1,5 @@
+Group Names: Rayyan Rahman, Abdul Sami Ahmed, Edin Sehic, Wilson Huang
+
+1.
+2. For the backend technologies we are using express.js. Its a system that simplifies handling of requests and responses. Middleware functions can be used for tasks such as authentication, logging, error handling, and more. Also provides a simple and intuitive routing system that allows us to define routes for handling different HTTP requests.
+3. 
