@@ -2,7 +2,7 @@ const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const clientInfo = require("../models/ClientInfo");
 const profileCheck = require("../validation/profile");
-const { checkUser } = require("../Middlewares/AuthMiddlewares");
+const loginCheck = require("../validation/login");
 
 const maxAge = 3*24*60*60;
 
@@ -28,7 +28,7 @@ const handleErrors = (err) => {
         return errors;
     }
 
-    if(err.code === 11000) {
+    if(err.code === 11001) {
         errors.email = "Email is already taken";
         return errors;
     }
@@ -56,8 +56,7 @@ module.exports.register = async (req, res, next) => {
         res.status(201).json({user: user._id, created: true})
     } catch(err) {
         console.log(err);
-        const errors = handleErrors(err);
-        res.json({ errors, created: false })
+        res.json({ errors: handleErrors(err)?.errors, created: false })
     }
 };
 
@@ -83,14 +82,14 @@ module.exports.login = async (req, res, next) => {
 module.exports.profile = async (req, res, next) => {
     try {
       const { errors, isValid } = profileCheck(req.body);
-      const loggedInUser = checkUser(req.user);
+      const loggedInUser = req.user;
 
       if (!loggedInUser) {
         return res.status(401).json({ message: 'Unauthorized: Please log in first' });
       }
   
       if (!isValid) {
-        return res.status(400).json(errors)
+        return res.status(400).json({ errors })
       }
   
       const { fullname, address1, address2, city, state, zipcode} = req.body;
@@ -101,9 +100,8 @@ module.exports.profile = async (req, res, next) => {
       } else {
         res.status(400).json({ message: 'Failed to update profile' });
       }
-    }
-    catch (err) {
-        console.log(err);
-        res.json({ errors, created: false })
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({ message: 'Failed to update profile', errors: err.errors || ['Unknown error'] });
     }
 };
