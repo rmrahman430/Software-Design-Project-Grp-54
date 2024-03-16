@@ -64,7 +64,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "client": "cd frontend && npm start",
     "server": "cd backend && npm start",
-    "dev": "concurrently \"npm run client\" \"npm run server\""
+    "dev": "concurrently \"npm run client\" \"npm run server\"",
+    "backend": "cd backend && npm run jest",
+    "test:all": "concurrently \"npm run client\" \"npm run backend\""
   },
   "keywords": [],
   "author": "",
