@@ -1,5 +1,4 @@
-//profileManagement.jsx
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Button, Card, Container } from "react-bootstrap";
 import { useCookies } from 'react-cookie';
@@ -7,85 +6,88 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from 'axios';
 
 const ProfileManagement = () => {
-
   const navigate = useNavigate();
   const [cookies, removeCookie] = useCookies([]);
-
-  const generateError = (error) =>
-    toast.error(error, {
-      position: "top-left",
-    });
-
-  useEffect(() => {
-    const verifyUser = async () => {
-      if(!cookies.jwt) {
-        navigate("/login");
-      } else {
-        const { data } = await axios.post("http://localhost:4000/profile", {}, { withCredentials: true});
-        if(!data.status) {
-          removeCookie("jwt");
-          navigate("/login");
-        } else {
-          console.log('success');
-        };
-      }
-    };
-    verifyUser();
-  }, [cookies, navigate, removeCookie]) 
-
-  const [profile, setProfile] = useState({
-    fullName: '',
-    address1: '',
-    address2: '',
-    city: '',
-    state: '',
-    zipcode: '',
+  const [profileData, setProfileData] = useState({
+    fullname: "",
+    address1: "",
+    address2: "",
+    city: "",
+    state: "",
+    zipcode: ""
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProfile(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setProfileData({ ...profileData, [name]: value });
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const { data } = await axios.post(
-        "http://localhost:4000/profile",
-        {
-          ...profile,
-        },
+      const response = await axios.post(
+        "http://localhost:4000/profile/update",
+        profileData,
         { withCredentials: true }
       );
-      if (data) {
-        if (data.errors) {
-          const { fullName, address1, address2, city, state, zipcode} = data.errors;
-          if (fullName) generateError(fullName);
-          else if (address1) generateError(address1);
-          else if (address2) generateError(address2);
-          else if (city) generateError(city);
-          else if (state) generateError(state);
-          else if (zipcode) generateError(zipcode);
-        } else {
-          navigate("/profile");
-          window.location.reload();
-        }
+      if (response.data.created) {
+        toast.success("Profile created successfully!");
+        window.location.reload();
+      } else if (response.data.updated) {
+        toast.success("Profile updated successfully!")
+        window.location.reload();
+      }else {
+        toast.error("Failed to update profile.");
       }
     } catch (error) {
-      console.log('Error:', error);
+      console.error('Error updating profile:', error);
+      toast.error("Failed to update profile.");
     }
   };
 
-  const states = ["NY", "CA", "TX", "FL", "PA"]; 
+  useEffect(() => {
+    const verifyUser = async () => {
+      try {
+        if (!cookies.jwt) {
+          navigate("/login");
+        } else {
+          const { data } = await axios.post("http://localhost:4000/profile", {}, { withCredentials: true });
+          if (!data || !data.status) {
+            removeCookie("jwt");
+            navigate("/login");
+          } else {
+            console.log('success');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+    verifyUser();
+  }, [cookies, navigate, removeCookie]);
+
+  
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const { data } = await axios.post("http://localhost:4000/profile/update", {}, { withCredentials: true });
+        if (data && data.status) {
+          setProfileData(data.updated);
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+    fetchProfileData();
+  }, []);
+
+  const states = ["NY", "CA", "TX", "FL", "PA"];
 
   const logOut = () => {
     removeCookie("jwt");
     navigate('/login');
     window.location.reload();
-  }
+  } 
 
   return (
     <Container>
@@ -101,8 +103,9 @@ const ProfileManagement = () => {
                     placeholder="Enter full name"
                     maxLength="50"
                     required
-                    name="fullName"
-                    value={profile.fullName}
+                    name="fullname"
+                    id="fullname"
+                    value={profileData.fullname}
                     onChange={handleChange}
                   />
                 </Form.Group>
@@ -115,7 +118,8 @@ const ProfileManagement = () => {
                     maxLength="100"
                     required
                     name="address1"
-                    value={profile.address1}
+                    id="address1"
+                    value={profileData.address1}
                     onChange={handleChange}
                   />
                 </Form.Group>
@@ -127,7 +131,8 @@ const ProfileManagement = () => {
                     placeholder="Apartment, studio, or floor"
                     maxLength="100"
                     name="address2"
-                    value={profile.address2}
+                    id="address2"
+                    value={profileData.address2}
                     onChange={handleChange}
                   />
                 </Form.Group>
@@ -140,7 +145,8 @@ const ProfileManagement = () => {
                     maxLength="100"
                     required
                     name="city"
-                    value={profile.city}
+                    id="city"
+                    value={profileData.city}
                     onChange={handleChange}
                   />
                 </Form.Group>
@@ -151,7 +157,8 @@ const ProfileManagement = () => {
                     as="select"
                     required
                     name="state"
-                    value={profile.state}
+                    id="state"
+                    value={profileData.state}
                     onChange={handleChange}
                   >
                     <option value="">Choose...</option>
@@ -170,7 +177,8 @@ const ProfileManagement = () => {
                     required
                     pattern="\d{5}(-\d{4})?"
                     name="zipcode"
-                    value={profile.zipcode}
+                    id="zipcode"
+                    value={profileData.zipcode}
                     onChange={handleChange}
                   />
                   <Form.Text className="text-muted">
@@ -178,19 +186,17 @@ const ProfileManagement = () => {
                   </Form.Text>
                 </Form.Group>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>   
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
 
-                <Button variant="primary" type="submit" style={{ width: '30%' }}>
-                  Submit
-                </Button>
+                  <Button variant="primary" type="submit" onClick={handleSubmit} style={{ width: '30%' }}>
+                    Submit
+                  </Button>
 
-                <Button className="private" type="submit" onClick={logOut} style={{ width: '30%' }}> 
-                  Log Out 
-                </Button>
+                  <Button className="private" type="submit" onClick={logOut} style={{ width: '30%' }}>
+                    Log Out
+                  </Button>    
 
                 </div>
-                
-                
               </Form>
             </div>
           </Card.Body>

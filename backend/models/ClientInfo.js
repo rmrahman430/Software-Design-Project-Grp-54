@@ -1,18 +1,23 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const { number } = require("yargs");
 
-const clientSchema = new Schema({
+const clientSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     fullname: {
         type: String,
         required: true,
         maxlength: 50
     },
-    addressOne: {
+    address1: {
         type: String,
         required: true,
         maxlength: 100
     },
-    addressTwo: {
+    address2: {
         type: String,
         maxlength: 100
     },
@@ -36,4 +41,4 @@ const clientSchema = new Schema({
     }
 });
 
-module.exports = Client = mongoose.model("clientInfo", clientSchema);
+module.exports = mongoose.model("clientInfo", clientSchema);
