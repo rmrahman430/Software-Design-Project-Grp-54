@@ -188,7 +188,7 @@ const ProfileManagement = () => {
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
 
-                  <Button variant="primary" type="submit" onClick={handleSubmit} style={{ width: '30%' }}>
+                  <Button variant="primary" type="submit" style={{ width: '30%' }}>
                     Submit
                   </Button>
 

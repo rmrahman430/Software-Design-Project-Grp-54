@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { number } = require("yargs");
 
 const clientSchema = new mongoose.Schema({
     user: {
@@ -34,9 +33,7 @@ const clientSchema = new mongoose.Schema({
         maxlength: 2
     },
     zipcode: {
-        type: Number,
-        min: 5,
-        max: 9,
+        type: String,
         required: true
     }
 });
