@@ -20,7 +20,7 @@ const handleErrors = (err) => {
     }
 
     if(err.message === "Incorrect Password") {
-        errors.username = "Password is Incorrect";
+        errors.password = "Password is Incorrect";
     }
 
     if(err.code === 11000) {
@@ -82,28 +82,38 @@ module.exports.login = async (req, res, next) => {
 
 module.exports.profile = async (req, res, next) => {
     try {
-      const { errors, isValid } = profileCheck(req.body);
-      const loggedInUser = checkUser(req.user);
+        const { errors, isValid } = profileCheck(req.body);
 
-      if (!loggedInUser) {
-        return res.status(401).json({ message: 'Unauthorized: Please log in first' });
-      }
-  
-      if (!isValid) {
-        return res.status(400).json(errors)
-      }
-  
-      const { fullname, address1, address2, city, state, zipcode} = req.body;
-      const userProfile = await clientInfo.create( {fullname, address1, address2, city, state, zipcode});
+        if (!isValid) {
+            console.log(errors);
+            return res.status(400).json(errors);
+        }
 
-      if (userProfile) {
-        res.json({ message: 'Profile information updated successfully!' });
-      } else {
-        res.status(400).json({ message: 'Failed to update profile' });
-      }
-    }
-    catch (err) {
+        const token = req.cookies.jwt; 
+        const decodedToken = jwt.verify(token, 'singhprojectkey');
+        const userId = decodedToken.id;
+
+
+        let profile = await clientInfo.findOne({ user: userId });
+
+        if (profile) {
+            profile.fullname = req.body.fullname;
+            profile.address1 = req.body.address1;
+            profile.address2 = req.body.address2;
+            profile.city = req.body.city;
+            profile.state = req.body.state;
+            profile.zipcode = req.body.zipcode;
+
+            profile = await profile.save();
+            return res.status(201).json({ created: false, profile, updated: true });
+        } else {
+            profile = await clientInfo.create({ user: userId, ...req.body });
+            return res.status(201).json({ created: true, profile, updated: false });
+        }
+    } catch(err) {
         console.log(err);
+        const errors = handleErrors(err);
         res.json({ errors, created: false })
     }
-};
+}
+

@@ -6,10 +6,10 @@ module.exports = function validateRegisterInput(data) {
 
     // Convert empty fields to an empty string so we may use validator functions
     data.fullname = !isEmpty(data.fullname) ? data.fullname : "";
-    data.addressOne = !isEmpty(data.addressOne) ? data.addressOne : "";
+    data.address1 = !isEmpty(data.address1) ? data.address1 : "";
     data.city = !isEmpty(data.city) ? data.city : "";
-    data.stateOne = !isEmpty(data.stateOne) ? data.stateOne : "";
-    data.zipCode = !isEmpty(data.zipCode) ? data.zipCode : "";
+    data.state = !isEmpty(data.state) ? data.state : "";
+    data.zipcode = !isEmpty(data.zipcode) ? data.zipcode : "";
 
 
     // Fullname check
@@ -18,8 +18,8 @@ module.exports = function validateRegisterInput(data) {
     }
     
     // Address check
-    if (Validator.isEmpty(data.addressOne)) {
-        errors.addressOne = "Address is required";
+    if (Validator.isEmpty(data.address1)) {
+        errors.address1 = "Address is required";
     }
 
     // City check
@@ -28,13 +28,13 @@ module.exports = function validateRegisterInput(data) {
     }
 
     // State check
-    if (Validator.isEmpty(data.stateOne)) {
-        errors.stateOne = "State is required";
+    if (Validator.isEmpty(data.state)) {
+        errors.state = "State is required";
     }
 
     // Zipcode check
-    if (Validator.isEmpty(data.zipCode)) {
-        errors.zipCode = "Zipcode is required";
+    if (Validator.isEmpty(data.zipcode)) {
+        errors.zipcode = "Zipcode is required";
     }
     // Return our errors object with any and all errors containted as well as an
     // isValid boolean that checks to see if we have any errors
