@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const clientInfo = require("../models/ClientInfo");
 const profileCheck = require("../validation/profile");
 const loginCheck = require("../validation/login");
+const registerCheck = require("../validation/register")
 
 const maxAge = 3*24*60*60;
 
@@ -20,7 +21,7 @@ const handleErrors = (err) => {
     }
 
     if(err.message === "Incorrect Password") {
-        errors.username = "Password is Incorrect";
+        errors.password = "Password is Incorrect";
     }
 
     if(err.code === 11000) {
@@ -28,7 +29,7 @@ const handleErrors = (err) => {
         return errors;
     }
 
-    if(err.code === 11001) {
+    if(err.code === 11000) {
         errors.email = "Email is already taken";
         return errors;
     }
@@ -45,24 +46,32 @@ const handleErrors = (err) => {
 module.exports.register = async (req, res, next) => {
     try {
         const { username, password, name, email } = req.body;
-        const user = await userModel.create( {username, password, name, email});
-        const token = createToken(user._id);
 
-        res.cookie("jwt", token, {
-            withCredentials: true,
-            httpOnly: false,
-            maxAge: maxAge * 1000,
-        });
+        const { errors, isValid } = registerCheck({ username, password, name, email});
+
+        if (!isValid) {
+            console.log(errors);
+            return res.status(401).json(errors);
+        }
+        const user = await userModel.create( {username, password, name, email});
         res.status(201).json({user: user._id, created: true})
     } catch(err) {
         console.log(err);
-        res.json({ errors: handleErrors(err)?.errors, created: false })
+        const errors = handleErrors(err);
+        res.json({ errors, created: false })
     }
 };
 
 module.exports.login = async (req, res, next) => {
     try {
         const { username, password } = req.body;
+        
+        const { errors, isValid } = loginCheck({ username, password });
+
+        if (!isValid) {
+            console.log(errors);
+            return res.status(401).json(errors);
+        }
         const user = await userModel.login( username, password );
         const token = createToken(user._id);
 
@@ -81,27 +90,62 @@ module.exports.login = async (req, res, next) => {
 
 module.exports.profile = async (req, res, next) => {
     try {
-      const { errors, isValid } = profileCheck(req.body);
-      const loggedInUser = req.user;
+        if (Object.keys(req.body).length === 0) {
+            return res.status(200).json({message: "Empty request"}); // Or send a success message without errors
+        }
+        const { errors, isValid } = profileCheck(req.body);
+        console.log(req.body);
 
-      if (!loggedInUser) {
-        return res.status(401).json({ message: 'Unauthorized: Please log in first' });
-      }
-  
-      if (!isValid) {
-        return res.status(400).json({ errors })
-      }
-  
-      const { fullname, address1, address2, city, state, zipcode} = req.body;
-      const userProfile = await clientInfo.create( {fullname, address1, address2, city, state, zipcode});
+        if (!isValid) {
+            console.log(errors);
+            return res.status(400).json(errors);
+        }
 
-      if (userProfile) {
-        res.json({ message: 'Profile information updated successfully!' });
-      } else {
-        res.status(400).json({ message: 'Failed to update profile' });
-      }
-    } catch (err) {
-        console.error(err);
-        res.status(400).json({ message: 'Failed to update profile', errors: err.errors || ['Unknown error'] });
+        const token = req.cookies.jwt; 
+        const decodedToken = jwt.verify(token, 'singhprojectkey');
+        const userId = decodedToken.id;
+
+        let profile = await clientInfo.findOne({ user: userId });
+
+        if (profile) {
+            profile.fullname = req.body.fullname;
+            profile.address1 = req.body.address1;
+            profile.address2 = req.body.address2;
+            profile.city = req.body.city;
+            profile.state = req.body.state;
+            profile.zipcode = req.body.zipcode;
+
+            profile = await profile.save();
+            return res.status(201).json({ created: false, profile, updated: true });
+        } else {
+            profile = await clientInfo.create({ user: userId, ...req.body });
+            return res.status(201).json({ created: true, profile, updated: false });
+        }
+    } catch(err) {
+        console.log(err);
+        const errors = handleErrors(err);
+        res.json({ errors, created: false })
     }
 };
+
+
+module.exports.getProfile = async (req, res, next) => {
+    try {
+        const token = req.cookies.jwt;
+        const decodedToken = jwt.verify(token, 'singhprojectkey');
+        const userId = decodedToken.id;
+
+        const profile = await clientInfo.findOne({ user: userId });
+  
+        if (profile) {
+            res.status(200).json({ profile }); // Send retrieved profile data
+        } else {
+            res.status(404).json({ message: "Profile not found" });
+        }
+    } catch (err) {
+        console.error(err);
+        const errors = handleErrors(err);
+        res.status(500).json({ errors }); // Send error response in case of issues
+    }
+};
+
