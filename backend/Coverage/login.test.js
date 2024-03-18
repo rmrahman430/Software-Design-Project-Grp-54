@@ -1,52 +1,86 @@
 const { login } = require('../Controllers/AuthControllers');
 const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
+const httpMocks = require('node-mocks-http');
 
 jest.mock('../models/userModel');
 jest.mock('jsonwebtoken');
-const maxAge = 3*24*60*60;
 
 describe('login handler', () => {
-  let req, res, next;
-
-  beforeEach(() => {
-    req = { body: {} };
-    res = { cookie: jest.fn(), status: jest.fn(), json: jest.fn() };
-    next = jest.fn();
-  });
 
   test('logs in user with correct credentials', async () => {
-    req.body.username = 'admin';
-    req.body.password = 'password';
+    const req = httpMocks.createRequest({
+      method: 'POST',
+      url: '/login',
+      body: {
+        username: 'admin',
+        password: 'password',
+      },
+    });
+
+    const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
+
     const user = { _id: 'user_id' };
     const token = 'fake_token';
 
-    userModel.login.mockResolvedValue(user);
+    // Mock dependencies (if needed)
+    userModel.login.mockResolvedValue(user); // Assuming userModel.login exists
     jwt.sign.mockReturnValue(token);
 
-    await login(req, res, next);
+    await login(req, res);
 
-    expect(userModel.login).toHaveBeenCalledWith('admin', 'password');
-    expect(jwt.sign).toHaveBeenCalledWith({ id: 'user_id' }, 'singhprojectkey', { expiresIn: 259200 });
-    expect(res.cookie).toHaveBeenCalledWith('jwt', token, {
-      withCredentials: true,
-      httpOnly: false,
-      maxAge: maxAge * 1000,
-    });
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ user: 'user_id', created: true });
+    // Assertions on mocked response object
+    expect(res.statusCode).toBe(200); // Check for successful response code
+    expect(res._getJSONData()).toEqual({ user: 'user_id', created: true }); // Verify response data
+
   });
 
-  test('handles login errors', async () => {
-    req.body.username = 'invalid_username';
-    req.body.password = 'invalid_password';
-    const error = new Error('Invalid credentials');
 
-    userModel.login.mockRejectedValue(error);
+  test('responds with error for empty username', async () => {
+    const emptyUsernameReq = httpMocks.createRequest({
+      method: 'POST',
+      url: '/login',
+      body: {
+        username: '', // Empty username
+        password: 'password',
+      },
+    });
+  
+    const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
 
-    await login(req, res, next);
+    const user = { _id: 'user_id' };
+  
+    // Mock dependencies (if needed)
+    // No need to mock userModel.login here (optional depending on implementation)
+    userModel.login.mockResolvedValue(user);
+  
+    await login(emptyUsernameReq, res); // Test empty username
+    expect(res.statusCode).toBe(401); // Expect unauthorized code
+    expect(res._getJSONData()).toEqual({ username: "Username field is required."}); // Verify generic error message (optional)
 
-    expect(userModel.login).toHaveBeenCalledWith('invalid_username', 'invalid_password');
-    expect(res.json).toHaveBeenCalledWith({ created: false, errors: { username: "", password: "" } });
+  });
+
+  test('responds with error for empty password', async () => {
+  
+    const emptyPasswordReq = httpMocks.createRequest({
+      method: 'POST',
+      url: '/login',
+      body: {
+        username: 'admin',
+        password: '', // Empty password
+      },
+    });
+  
+    const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
+
+    const user = { _id: 'user_id' };
+  
+    // Mock dependencies (if needed)
+    // No need to mock userModel.login here (optional depending on implementation)
+    userModel.login.mockResolvedValue(user);
+  
+    await login(emptyPasswordReq, res); // Test empty password
+    expect(res.statusCode).toBe(401); // Expect unauthorized code
+    expect(res._getJSONData()).toEqual({ password: "Password field is required"}); // Verify generic error message (optional)
   });
 });

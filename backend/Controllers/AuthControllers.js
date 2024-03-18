@@ -2,6 +2,7 @@ const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const clientInfo = require("../models/ClientInfo");
 const profileCheck = require("../validation/profile");
+const loginCheck = require("../validation/login");
 
 const maxAge = 3*24*60*60;
 
@@ -63,6 +64,13 @@ module.exports.register = async (req, res, next) => {
 module.exports.login = async (req, res, next) => {
     try {
         const { username, password } = req.body;
+        
+        const { errors, isValid } = loginCheck({ username, password });
+
+        if (!isValid) {
+            console.log(errors);
+            return res.status(401).json(errors);
+        }
         const user = await userModel.login( username, password );
         const token = createToken(user._id);
 
@@ -82,7 +90,7 @@ module.exports.login = async (req, res, next) => {
 module.exports.profile = async (req, res, next) => {
     try {
         if (Object.keys(req.body).length === 0) {
-            return res.status(200).json({}); // Or send a success message without errors
+            return res.status(200).json({message: "Empty request"}); // Or send a success message without errors
         }
         const { errors, isValid } = profileCheck(req.body);
         console.log(req.body);
@@ -117,5 +125,26 @@ module.exports.profile = async (req, res, next) => {
         const errors = handleErrors(err);
         res.json({ errors, created: false })
     }
-}
+};
+
+
+module.exports.getProfile = async (req, res, next) => {
+    try {
+        const token = req.cookies.jwt;
+        const decodedToken = jwt.verify(token, 'singhprojectkey');
+        const userId = decodedToken.id;
+
+        const profile = await clientInfo.findOne({ user: userId });
+  
+        if (profile) {
+            res.status(200).json({ profile }); // Send retrieved profile data
+        } else {
+            res.status(404).json({ message: "Profile not found" });
+        }
+    } catch (err) {
+        console.error(err);
+        const errors = handleErrors(err);
+        res.status(500).json({ errors }); // Send error response in case of issues
+    }
+};
 
