@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const clientInfo = require("../models/ClientInfo");
 const profileCheck = require("../validation/profile");
 const loginCheck = require("../validation/login");
+const registerCheck = require("../validation/register")
 
 const maxAge = 3*24*60*60;
 
@@ -45,14 +46,14 @@ const handleErrors = (err) => {
 module.exports.register = async (req, res, next) => {
     try {
         const { username, password, name, email } = req.body;
-        const user = await userModel.create( {username, password, name, email});
-        const token = createToken(user._id);
 
-        res.cookie("jwt", token, {
-            withCredentials: true,
-            httpOnly: false,
-            maxAge: maxAge * 1000,
-        });
+        const { errors, isValid } = registerCheck({ username, password, name, email});
+
+        if (!isValid) {
+            console.log(errors);
+            return res.status(401).json(errors);
+        }
+        const user = await userModel.create( {username, password, name, email});
         res.status(201).json({user: user._id, created: true})
     } catch(err) {
         console.log(err);
