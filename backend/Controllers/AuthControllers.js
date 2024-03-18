@@ -2,7 +2,6 @@ const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const clientInfo = require("../models/ClientInfo");
 const profileCheck = require("../validation/profile");
-const { checkUser } = require("../Middlewares/AuthMiddlewares");
 
 const maxAge = 3*24*60*60;
 
@@ -82,7 +81,11 @@ module.exports.login = async (req, res, next) => {
 
 module.exports.profile = async (req, res, next) => {
     try {
+        if (Object.keys(req.body).length === 0) {
+            return res.status(200).json({}); // Or send a success message without errors
+        }
         const { errors, isValid } = profileCheck(req.body);
+        console.log(req.body);
 
         if (!isValid) {
             console.log(errors);
@@ -92,7 +95,6 @@ module.exports.profile = async (req, res, next) => {
         const token = req.cookies.jwt; 
         const decodedToken = jwt.verify(token, 'singhprojectkey');
         const userId = decodedToken.id;
-
 
         let profile = await clientInfo.findOne({ user: userId });
 
