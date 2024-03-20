@@ -1,9 +1,10 @@
+//backend\index.js
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const authRoutes = require('./Routes/AuthRoutes');
 const cookieParser = require('cookie-parser');
-
+const fuelRoutes = require('./Routes/FuelRoutes'); 
 const app = express();
 
 app.listen(4000, () => {
@@ -24,3 +25,4 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 app.use("/", authRoutes);
+app.use('/', fuelRoutes);
