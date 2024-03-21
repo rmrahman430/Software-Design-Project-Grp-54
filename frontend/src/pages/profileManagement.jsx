@@ -70,9 +70,10 @@ const ProfileManagement = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const { data } = await axios.post("http://localhost:4000/profile/update", {}, { withCredentials: true });
-        if (data && data.status) {
-          setProfileData(data.updated);
+        const response = await axios.get("http://localhost:4000/profile/retrieval", {}, { withCredentials: true });
+        if (response.data) {
+          const { fullname, address1, address2, city, state, zipcode } = response.data;
+          setProfileData({ fullname, address1, address2, city, state, zipcode });
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
