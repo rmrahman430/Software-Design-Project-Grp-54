@@ -105,7 +105,6 @@ const ProfileManagement = () => {
                     maxLength="50"
                     required
                     name="fullname"
-                    id="fullname"
                     value={profileData.fullname}
                     onChange={handleChange}
                   />
@@ -119,7 +118,6 @@ const ProfileManagement = () => {
                     maxLength="100"
                     required
                     name="address1"
-                    id="address1"
                     value={profileData.address1}
                     onChange={handleChange}
                   />
@@ -132,7 +130,6 @@ const ProfileManagement = () => {
                     placeholder="Apartment, studio, or floor"
                     maxLength="100"
                     name="address2"
-                    id="address2"
                     value={profileData.address2}
                     onChange={handleChange}
                   />
@@ -146,7 +143,6 @@ const ProfileManagement = () => {
                     maxLength="100"
                     required
                     name="city"
-                    id="city"
                     value={profileData.city}
                     onChange={handleChange}
                   />
@@ -158,7 +154,6 @@ const ProfileManagement = () => {
                     as="select"
                     required
                     name="state"
-                    id="state"
                     value={profileData.state}
                     onChange={handleChange}
                   >
@@ -178,7 +173,6 @@ const ProfileManagement = () => {
                     required
                     pattern="\d{5}(-\d{4})?"
                     name="zipcode"
-                    id="zipcode"
                     value={profileData.zipcode}
                     onChange={handleChange}
                   />

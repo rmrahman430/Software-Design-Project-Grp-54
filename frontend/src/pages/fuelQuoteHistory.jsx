@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const FuelQuoteHistory = () => {
-  const quotes = [
-    { gallonsRequested: 0, deliveryAddress: "0", deliveryDate: "0", suggestedPrice: 0, totalAmountDue: 0 }
-  ];
+  const [quotes, setQuotes] = useState([]);
+
+  useEffect(() => {
+    const fetchQuotes = async () => {
+      const historyUrl = 'http://localhost:4000/fuel-quote-history'; 
+      try {
+        const response = await axios.get(historyUrl, { withCredentials: true });
+        setQuotes(response.data || []);
+      } catch (error) {
+        console.error('Error fetching fuel quote history:', error);
+      }
+    };
+    fetchQuotes();
+  }, []);
 
   const tableStyle = {
     width: '100%',
@@ -37,10 +49,10 @@ const FuelQuoteHistory = () => {
           {quotes.map((quote, index) => (
             <tr key={index}>
               <td style={thTdStyle}>{quote.gallonsRequested}</td>
-              <td style={thTdStyle}>{quote.deliveryAddress}</td>
-              <td style={thTdStyle}>{quote.deliveryDate}</td>
-              <td style={thTdStyle}>${quote.suggestedPrice.toFixed(2)}</td>
-              <td style={thTdStyle}>${quote.totalAmountDue.toFixed(2)}</td>
+              <td style={thTdStyle}>{quote.deliveryAddress || "N/A"}</td>
+              <td style={thTdStyle}>{quote.deliveryDate || "N/A"}</td>
+              <td style={thTdStyle}>${quote.suggestedPrice ? quote.suggestedPrice.toFixed(2) : "0.00"}</td>
+              <td style={thTdStyle}>${quote.totalAmountDue ? quote.totalAmountDue.toFixed(2) : "0.00"}</td>
             </tr>
           ))}
         </tbody>
