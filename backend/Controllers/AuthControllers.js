@@ -91,7 +91,7 @@ module.exports.login = async (req, res, next) => {
 module.exports.profile = async (req, res, next) => {
     try {
         if (Object.keys(req.body).length === 0) {
-            return res.status(200).json({message: "Empty request"}); // Or send a success message without errors
+            return res.status(200).json({message: "Empty request"}); 
         }
         const { errors, isValid } = profileCheck(req.body);
         console.log(req.body);
@@ -128,23 +128,14 @@ module.exports.profile = async (req, res, next) => {
     }
 };
 
-module.exports.getProfile = async (req, res, next) => {
+module.exports.getProfile = async (req, res) => {
     try {
-        const token = req.cookies.jwt;
-        const decodedToken = jwt.verify(token, 'singhprojectkey');
-        const userId = decodedToken.id;
-
-        const profile = await clientInfo.findOne({ user: userId });
-  
-        if (profile) {
-            res.status(200).json({ profile }); // Send retrieved profile data
-        } else {
-            res.status(404).json({ message: "Profile not found" });
-        }
+        const profiles = await clientInfo.find({});
+        res.status(200).json(profiles); 
     } catch (err) {
         console.error(err);
         const errors = handleErrors(err);
-        res.status(500).json({ errors }); // Send error response in case of issues
+        res.status(500).json({ errors }); 
     }
 };
 

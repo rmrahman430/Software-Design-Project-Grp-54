@@ -3,6 +3,7 @@ import Header from './components/Header';
 import Login from './pages/login';
 import Register from './pages/registration';
 import ProfileManagement from './pages/profileManagement';
+import ProfileUpdate from './pages/profileUpdate';
 import FuelQuote from './pages/fuel';
 import FuelQuoteHistory from './pages/fuelQuoteHistory';
 import AboutSection from './components/AboutSection';
@@ -23,6 +24,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<ProfileManagement />} />
+        <Route path="/updateprofile" element={<ProfileUpdate />} />
         <Route path="/fuel-quote" element={<FuelQuote />} />
         <Route path="/fuel-quote-history" element={<FuelQuoteHistory quotes={[]} />} />
         <Route path="/about-us" element={<AboutSection />} />
