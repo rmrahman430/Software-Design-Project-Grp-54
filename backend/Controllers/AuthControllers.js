@@ -1,4 +1,4 @@
-const userModel = require("../models/userModel");
+const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const clientInfo = require("../models/ClientInfo");
 const profileCheck = require("../validation/profile");
@@ -14,32 +14,30 @@ const createToken = (id) => {
 };
 
 const handleErrors = (err) => {
-    let errors = { username: '', password:'' } ;
+    let errors = {};
 
-    if(err.message === "Incorrect Username") {
+    if (err.message === "Incorrect Username") {
         errors.username = "Username is Incorrect";
-    }
-
-    if(err.message === "Incorrect Password") {
+    } else if (err.message === "Incorrect Password") {
         errors.password = "Password is Incorrect";
-    }
-
-    if(err.code === 11000) {
+    } else if (err.message === "Password must be at least 8 characters long") {
+        errors.regpassword = "Password field is required."
+    } else if (err.message === "Username is already taken") {
+        errors.regusername === "Username field is required."
+    } else if (err.message === "Invalid email format") {
+        errors.email === "Please enter a valid email address."
+    } else if (err.code === 11000 && err.keyPattern.username) {
         errors.username = "Username is already taken";
-        return errors;
-    }
-
-    if(err.code === 11000) {
+    } else if (err.code === 11000 && err.keyPattern.email) {
         errors.email = "Email is already taken";
-        return errors;
-    }
-
-
-    if(err.message.includes("Users validation failed")) {
-        Object.values(err.errors).forEach(({properties}) => {
+    } else if (err.message && err.message.includes("Users validation failed")) {
+        Object.values(err.errors).forEach(({ properties }) => {
             errors[properties.path] = properties.message;
-        })
+        });
+    } else {
+        console.error('Error during registration:', err);
     }
+
     return errors;
 };
 
@@ -47,18 +45,17 @@ module.exports.register = async (req, res, next) => {
     try {
         const { username, password, name, email } = req.body;
 
-        const { errors, isValid } = registerCheck({ username, password, name, email});
+        const { errors, isValid } = registerCheck({ username, password, name, email });
 
         if (!isValid) {
-            console.log(errors);
             return res.status(401).json(errors);
         }
-        const user = await userModel.create( {username, password, name, email});
-        res.status(201).json({user: user._id, created: true})
-    } catch(err) {
-        console.log(err);
+
+        const user = await User.create({ username, password, name, email });
+        res.status(201).json({ user: user._id, created: true });
+    } catch (err) {
         const errors = handleErrors(err);
-        res.json({ errors, created: false })
+        res.status(401).json({ errors, created: false });
     }
 };
 
@@ -72,7 +69,7 @@ module.exports.login = async (req, res, next) => {
             console.log(errors);
             return res.status(401).json(errors);
         }
-        const user = await userModel.login( username, password );
+        const user = await User.login( username, password );
         const token = createToken(user._id);
 
         res.cookie("jwt", token, {
@@ -82,9 +79,8 @@ module.exports.login = async (req, res, next) => {
         });
         res.status(200).json({user: user._id, created: true})
     } catch(err) {
-        console.log(err);
         const errors = handleErrors(err);
-        res.json({ errors, created: false })
+        res.status(401).json({ errors, created: false });
     }
 };
 
@@ -122,9 +118,8 @@ module.exports.profile = async (req, res, next) => {
             return res.status(201).json({ created: true, profile, updated: false });
         }
     } catch(err) {
-        console.log(err);
         const errors = handleErrors(err);
-        res.json({ errors, created: false })
+        res.status(401).json({ errors, created: false });
     }
 };
 
@@ -133,9 +128,8 @@ module.exports.getProfile = async (req, res) => {
         const profiles = await clientInfo.find({});
         res.status(200).json(profiles); 
     } catch (err) {
-        console.error(err);
         const errors = handleErrors(err);
-        res.status(500).json({ errors }); 
+        res.status(401).json({ errors, created: false });
     }
 };
 

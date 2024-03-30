@@ -41,4 +41,26 @@ UserSchema.statics.login = async function(username, password) {
   throw Error("Incorrect Username");
 }
 
+UserSchema.statics.register = async function(userInfo) {
+  const { username, password, name, email } = userInfo;
+
+  if (password.length < 8) {
+    throw Error("Password must be at least 8 characters long");
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw Error("Invalid email format");
+  }
+
+  const user = await this.findOne({ username });
+  if (user) {
+    throw Error("Username is already taken");
+  }
+
+  const User = await this.create({ username, password, name, email });
+  return User;
+}
+
+
 module.exports = mongoose.model("Users", UserSchema);
