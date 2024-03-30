@@ -1,5 +1,5 @@
 const { register } = require('../Controllers/AuthControllers');
-const userModel = require('../models/userModel');
+const User = require('../models/userModel');
 const httpMocks = require('node-mocks-http');
 
 jest.mock('../models/userModel');
@@ -21,7 +21,7 @@ describe('registerController.register', () => {
     const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
   
     // Mock the register function
-    userModel.create.mockResolvedValueOnce({ _id: userId })
+    User.create.mockResolvedValueOnce({ _id: userId })
   
     // Call the register function with mocked objects
     await register(req, res);
@@ -29,7 +29,7 @@ describe('registerController.register', () => {
     // Assertions
     expect(res.statusCode).toBe(201); // Expect successful response (created: true)
     expect(res._getJSONData()).toEqual({ user: userId, created: true }); // Assuming _id exists on user
-    expect(userModel.create).toHaveBeenCalledWith({
+    expect(User.create).toHaveBeenCalledWith({
       username: 'johndoe',
       password: 'securepassword',
       name: 'John Doe',
@@ -54,7 +54,7 @@ describe('registerController.register', () => {
 
     const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
 
-    userModel.create.mockResolvedValueOnce({ _id: userId })
+    User.create.mockResolvedValueOnce({ _id: userId })
 
     // Call the register function with mocked objects
     await register(req, res);
@@ -79,7 +79,7 @@ describe('registerController.register', () => {
 
     const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
 
-    userModel.create.mockResolvedValueOnce({ _id: userId })
+    User.create.mockResolvedValueOnce({ _id: userId })
 
     // Call the register function with mocked objects
     await register(req, res);
@@ -105,7 +105,7 @@ describe('registerController.register', () => {
 
     const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
 
-    userModel.create.mockResolvedValueOnce({ _id: userId })
+    User.create.mockResolvedValueOnce({ _id: userId })
 
     // Call the register function with mocked objects
     await register(req, res);
@@ -131,7 +131,7 @@ describe('registerController.register', () => {
 
     const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
 
-    userModel.create.mockResolvedValueOnce({ _id: userId })
+    User.create.mockResolvedValueOnce({ _id: userId })
 
     // Call the register function with mocked objects
     await register(req, res);
@@ -157,7 +157,7 @@ describe('registerController.register', () => {
 
     const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
 
-    userModel.create.mockResolvedValueOnce({ _id: userId })
+    User.create.mockResolvedValueOnce({ _id: userId })
 
     // Call the register function with mocked objects
     await register(req, res);

@@ -29,10 +29,10 @@ const Registration = () => {
       });
       if (data) {
         if(data.errors) {
-          const { username, password, email } = data.errors;
-          if(username) generateError(username);
+          const { regusername, regpassword, email } = data.errors;
+          if(regusername) generateError(regusername);
           if(email) generateError(email);
-          else if (password) generateError(password);
+          else if (regpassword) generateError(regpassword);
         } else {
           navigate("/login");
         }
