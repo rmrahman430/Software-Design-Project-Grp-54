@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Fuel = () => {
   const navigate = useNavigate();
@@ -8,23 +9,35 @@ const Fuel = () => {
   const [formState, setFormState] = useState({
     gallonsRequested: '',
     deliveryDate: '',
-    totalAmountDue: 0, // Initially set to 0, will be calculated
   });
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    let { name, value } = e.target;
+
+    // Only allow numeric values for gallonsRequested
+    if (name === "gallonsRequested") {
+      value = value.replace(/[^0-9]/g, '');
+    }
+
+    setFormState({ ...formState, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const totalAmountDue = formState.gallonsRequested * suggestedPrice;
-    setFormState({ ...formState, totalAmountDue });
+    const submissionState = { ...formState, totalAmountDue };
 
-    console.log('Form submitted with state:', formState);
-    // Navigate to the Fuel Quote History page after setting the state
-    // Use setTimeout to ensure state is updated before navigation
-    setTimeout(() => navigate('/fuel-quote-history'), 0);
+    try {
+      const response = await axios.post('http://localhost:4000/fuel-quote', submissionState, { withCredentials: true });
+      console.log('Form submitted response:', response.data);
+      navigate('/fuel-quote-history');
+    } catch (error) {
+      console.error('Error submitting fuel quote:', error);
+    }
   };
 
-  const handleChange = (e) => {
-    setFormState({ ...formState, [e.target.name]: e.target.value });
-  };
+  // Calculate totalAmountDue for displaying in the input field
+  const totalAmountDue = formState.gallonsRequested ? formState.gallonsRequested * suggestedPrice : 0;
 
   return (
     <div className="fuelPage">
@@ -33,7 +46,7 @@ const Fuel = () => {
         <div>
           <label>Gallons Requested:</label>
           <input
-            type="number"
+            type="text" // Change this to text to avoid default number input behavior
             name="gallonsRequested"
             value={formState.gallonsRequested}
             onChange={handleChange}
@@ -54,7 +67,7 @@ const Fuel = () => {
           <label>Suggested Price / gallon:</label>
           <input
             type="text"
-            value={`$${suggestedPrice.toFixed(2)}`} // Display the placeholder suggested price
+            value={`$${suggestedPrice.toFixed(2)}`}
             readOnly
           />
         </div>
@@ -62,7 +75,7 @@ const Fuel = () => {
           <label>Total Amount Due:</label>
           <input
             type="text"
-            value={`$${formState.totalAmountDue.toFixed(2)}`} // Calculate and display total amount due
+            value={`$${totalAmountDue.toFixed(2)}`}
             readOnly
           />
         </div>

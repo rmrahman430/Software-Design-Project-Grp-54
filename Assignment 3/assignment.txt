@@ -2,4 +2,4 @@ Group Names: Rayyan Rahman, Abdul Sami Ahmed, Edin Sehic, Wilson Huang
 
 1. https://github.com/rmrahman430/Software-Design-Project-Grp-54
 2. For the backend technologies we are using express.js. Its a system that simplifies handling of requests and responses. Middleware functions can be used for tasks such as authentication, logging, error handling, and more. Also provides a simple and intuitive routing system that allows us to define routes for handling different HTTP requests.
-3. Rayyan was able to setup the backend for the profile management form and link the data sent to the database and store it in a schema. He also implemented code coverage for the login and register functions.
+3. Rayyan was able to setup the backend for the profile management form and link the data sent to the database and store it in a schema. Wilson set up the database and was able to set up the backend for the login and registration form, as well as linking the data to the database. Abdul Set up the connection between the backend and frontend for the Fuel and Fuel Quote History. Edin set up the pricing module.
