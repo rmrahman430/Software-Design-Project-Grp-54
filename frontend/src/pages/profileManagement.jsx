@@ -35,6 +35,7 @@ const ProfileManagement = () => {
     const fetchProfileDetails = async () => {
         try {
             const response = await axios.get('http://localhost:4000/profile/retrieval');
+            console.log('Response:', response);
             setProfileDetails(response.data);
         } catch (error) {
             console.error('Error fetching tracking data:', error);
@@ -67,29 +68,29 @@ const ProfileManagement = () => {
           <Card.Body>
             <div className="m-4">
               <Form>
-                <ListGroup>
-                {filteredProfile.map(profile => (
-                <React.Fragment key={profile.user}>
-                    <ListGroup.Item><strong>Full Name:</strong> {profile.fullname}</ListGroup.Item>
-                    <ListGroup.Item><strong>Address 1:</strong> {profile.address1}</ListGroup.Item>
-                    <ListGroup.Item><strong>Address 2:</strong> {profile.address2}</ListGroup.Item>
-                    <ListGroup.Item><strong>City:</strong> {profile.city}</ListGroup.Item>
-                    <ListGroup.Item><strong>State:</strong> {profile.state}</ListGroup.Item>
-                    <ListGroup.Item><strong>Zipcode:</strong> {profile.zipcode}</ListGroup.Item>
-                    </React.Fragment>
-                  ))}
-                </ListGroup>
-
+                {profileDetails.length > 0 && (
+                  <ListGroup>
+                    {filteredProfile.map(profile => (
+                      <React.Fragment key={profile.user}>
+                        <ListGroup.Item><strong>Full Name:</strong> {profile.fullname}</ListGroup.Item>
+                        <ListGroup.Item><strong>Address 1:</strong> {profile.address1}</ListGroup.Item>
+                        <ListGroup.Item><strong>Address 2:</strong> {profile.address2}</ListGroup.Item>
+                        <ListGroup.Item><strong>City:</strong> {profile.city}</ListGroup.Item>
+                        <ListGroup.Item><strong>State:</strong> {profile.state}</ListGroup.Item>
+                        <ListGroup.Item><strong>Zipcode:</strong> {profile.zipcode}</ListGroup.Item>
+                      </React.Fragment>
+                    ))}
+                  </ListGroup>
+                )}
+  
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
-
                   <Button variant="primary" type="submit" style={{ width: '30%' }} onClick={() => navigate('/updateprofile')}>
                     Update Info
                   </Button>
-
+  
                   <Button className="private" type="submit" onClick={logOut} style={{ width: '30%' }}>
                     Log Out
-                  </Button>    
-
+                  </Button>
                 </div>
               </Form>
             </div>
@@ -98,7 +99,7 @@ const ProfileManagement = () => {
         <ToastContainer />
       </div>
     </Container>
-  );
+  );  
 };
 
 export default ProfileManagement;
