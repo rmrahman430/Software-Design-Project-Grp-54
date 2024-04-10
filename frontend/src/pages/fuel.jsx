@@ -6,10 +6,7 @@ const Fuel = () => {
   const navigate = useNavigate();
   const suggestedPrice = 2.5; // Placeholder price per gallon
 
-  const [formState, setFormState] = useState({
-    gallonsRequested: '',
-    deliveryDate: '',
-  });
+  const [formState, setFormState] =  useState([]);
 
   const handleChange = (e) => {
     let { name, value } = e.target;
@@ -22,10 +19,15 @@ const Fuel = () => {
     setFormState({ ...formState, [name]: value });
   };
 
+  const totalPrice = formState.gallonsRequested ? formState.gallonsRequested * suggestedPrice : 0;
+  const submissionState = {
+    ...formState, 
+    suggestedPrice,
+    totalPrice
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const totalAmountDue = formState.gallonsRequested * suggestedPrice;
-    const submissionState = { ...formState, totalAmountDue };
 
     try {
       const response = await axios.post('http://localhost:4000/fuel-quote', submissionState, { withCredentials: true });
@@ -35,9 +37,6 @@ const Fuel = () => {
       console.error('Error submitting fuel quote:', error);
     }
   };
-
-  // Calculate totalAmountDue for displaying in the input field
-  const totalAmountDue = formState.gallonsRequested ? formState.gallonsRequested * suggestedPrice : 0;
 
   return (
     <div className="fuelPage">
@@ -64,10 +63,21 @@ const Fuel = () => {
           />
         </div>
         <div>
+          <label>Delivery Address:</label>
+          <input
+            type="text"
+            name="address"
+            value={formState.address}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
           <label>Suggested Price / gallon:</label>
           <input
             type="text"
             value={`$${suggestedPrice.toFixed(2)}`}
+            onChange={handleChange}
             readOnly
           />
         </div>
@@ -75,7 +85,8 @@ const Fuel = () => {
           <label>Total Amount Due:</label>
           <input
             type="text"
-            value={`$${totalAmountDue.toFixed(2)}`}
+            value={`$${totalPrice.toFixed(2)}`}
+            onChange={handleChange}
             readOnly
           />
         </div>
