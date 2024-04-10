@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const Price = require("../models/pricingModel");
 const jwt = require("jsonwebtoken");
 const clientInfo = require("../models/ClientInfo");
 const profileCheck = require("../validation/profile");
@@ -133,3 +134,31 @@ module.exports.getProfile = async (req, res) => {
     }
 };
 
+module.exports.quote = async (req, res, next) => {
+    try {
+        const token = req.cookies.jwt; 
+        const decodedToken = jwt.verify(token, 'singhprojectkey');
+        const userId = decodedToken.id;
+
+        const { user, gallonsRequested, suggestedPrice, address, deliveryDate, totalPrice } = req.body;
+        const quote = await Price.create({ user: userId, ...req.body });
+        res.status(201).json({ created: false, quote, updated: true });
+    } catch (err) {
+        const errors = handleErrors(err);
+        res.status(401).json({ errors, created: false });
+    }
+  };
+
+module.exports.getFuelHistory = async (req, res) => {
+    try {
+        const token = req.cookies.jwt; 
+        const decodedToken = jwt.verify(token, 'singhprojectkey');
+        const userId = decodedToken.id;
+
+        const history = await Price.find({ user: userId});
+        res.status(200).json(history); 
+    } catch (err) {
+        const errors = handleErrors(err);
+        res.status(401).json({ errors, created: false });
+    }
+};
