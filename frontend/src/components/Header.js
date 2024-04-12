@@ -35,18 +35,14 @@ const Header = () => {
         
             <nav>
                 <ul>
-                    <li>
-                        <Link to="/fuel-quote">Fuel Quote</Link>
-                    </li>
-                    <li>
-                        <Link to="/fuel-quote-history">Fuel Quote History</Link>
-                    </li>
                     {loggedIn ? (
-                        <li>
+                        <li className="navLinks">
+                            <Link to="/fuel-quote">Fuel Quote</Link>
+                            <Link to="/fuel-quote-history">Fuel Quote History</Link>
                             <Link to="/profile">Profile</Link>
                         </li>
                     ) : (
-                        <li>
+                        <li className="navLinks">
                             <Link to="/login">Login</Link>
                         </li>
                     )}
