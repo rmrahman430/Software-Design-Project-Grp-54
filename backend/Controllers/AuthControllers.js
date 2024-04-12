@@ -4,15 +4,13 @@ const jwt = require("jsonwebtoken");
 const clientInfo = require("../models/ClientInfo");
 const profileCheck = require("../validation/profile");
 const loginCheck = require("../validation/login");
-const registerCheck = require("../validation/register");
+const registerCheck = require("../validation/register")
 
-require('dotenv').config();  
-
-const maxAge = 3 * 24 * 60 * 60;
+const maxAge = 3*24*60*60;
 
 const createToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: maxAge,
+    return jwt.sign({id}, "singhprojectkey", {
+        expiresIn: maxAge, 
     });
 };
 
@@ -24,24 +22,21 @@ const handleErrors = (err) => {
     } else if (err.message === "Incorrect Password") {
         errors.password = "Password is Incorrect";
     } else if (err.message === "Password must be at least 8 characters long") {
-        errors.regpassword = "Password field is required.";
+        errors.regpassword = "Password field is required."
     } else if (err.message === "Username is already taken") {
-        errors.regusername = "Username field is required.";
+        errors.regusername === "Username field is required."
     } else if (err.message === "Invalid email format") {
-        errors.email = "Please enter a valid email address.";
-    } else if (err.code === 11000) {
-        if (err.keyPattern.username) {
-            errors.username = "Username is already taken";
-        } else if (err.keyPattern.email) {
-            errors.email = "Email is already taken";
-        }
+        errors.email === "Please enter a valid email address."
+    } else if (err.code === 11000 && err.keyPattern.username) {
+        errors.username = "Username is already taken";
+    } else if (err.code === 11000 && err.keyPattern.email) {
+        errors.email = "Email is already taken";
     } else if (err.message && err.message.includes("Users validation failed")) {
         Object.values(err.errors).forEach(({ properties }) => {
             errors[properties.path] = properties.message;
         });
     } else {
-        console.error('Unexpected error during registration:', err);
-        errors.unexpected = "An unexpected error occurred.";
+        console.error('Error during registration:', err);
     }
 
     return errors;
@@ -50,6 +45,7 @@ const handleErrors = (err) => {
 module.exports.register = async (req, res, next) => {
     try {
         const { username, password, name, email } = req.body;
+
         const { errors, isValid } = registerCheck({ username, password, name, email });
 
         if (!isValid) {
@@ -67,21 +63,100 @@ module.exports.register = async (req, res, next) => {
 module.exports.login = async (req, res, next) => {
     try {
         const { username, password } = req.body;
+        
         const { errors, isValid } = loginCheck({ username, password });
 
         if (!isValid) {
             console.log(errors);
             return res.status(401).json(errors);
         }
-
-        const user = await User.login(username, password);
+        const user = await User.login( username, password );
         const token = createToken(user._id);
+
         res.cookie("jwt", token, {
             withCredentials: true,
             httpOnly: false,
             maxAge: maxAge * 1000,
         });
-        res.status(200).json({ user: user._id, created: true });
+        res.status(200).json({user: user._id, created: true})
+    } catch(err) {
+        const errors = handleErrors(err);
+        res.status(401).json({ errors, created: false });
+    }
+};
+
+module.exports.profile = async (req, res, next) => {
+    try {
+        if (Object.keys(req.body).length === 0) {
+            return res.status(200).json({message: "Empty request"}); 
+        }
+        const { errors, isValid } = profileCheck(req.body);
+        console.log(req.body);
+
+        if (!isValid) {
+            console.log(errors);
+            return res.status(400).json(errors);
+        }
+
+        const token = req.cookies.jwt; 
+        const decodedToken = jwt.verify(token, 'singhprojectkey');
+        const userId = decodedToken.id;
+
+        let profile = await clientInfo.findOne({ user: userId });
+
+        if (profile) {
+            profile.fullname = req.body.fullname;
+            profile.address1 = req.body.address1;
+            profile.address2 = req.body.address2;
+            profile.city = req.body.city;
+            profile.state = req.body.state;
+            profile.zipcode = req.body.zipcode;
+
+            profile = await profile.save();
+            return res.status(201).json({ created: false, profile, updated: true });
+        } else {
+            profile = await clientInfo.create({ user: userId, ...req.body });
+            return res.status(201).json({ created: true, profile, updated: false });
+        }
+    } catch(err) {
+        const errors = handleErrors(err);
+        res.status(401).json({ errors, created: false });
+    }
+};
+
+module.exports.getProfile = async (req, res) => {
+    try {
+        const profiles = await clientInfo.find({});
+        res.status(200).json(profiles); 
+    } catch (err) {
+        const errors = handleErrors(err);
+        res.status(401).json({ errors, created: false });
+    }
+};
+
+module.exports.quote = async (req, res, next) => {
+    try {
+        const token = req.cookies.jwt; 
+        const decodedToken = jwt.verify(token, 'singhprojectkey');
+        const userId = decodedToken.id;
+
+        const { user, gallonsRequested, suggestedPrice, address, deliveryDate, totalPrice } = req.body;
+        const quote = await Price.create({ user: userId, ...req.body });
+        res.status(201).json({ created: false, quote, updated: true });
+    } catch (err) {
+        const errors = handleErrors(err);
+        res.status(401).json({ errors, created: false });
+    }
+  };
+
+module.exports.getFuelHistory = async (req, res) => {
+    try {
+        const token = req.cookies.jwt; 
+        const decodedToken = jwt.verify(token, 'singhprojectkey');
+        const userId = decodedToken.id;
+
+        const history = await Price.find({ user: userId});
+        res.status(200).json(history); 
     } catch (err) {
         const errors = handleErrors(err);
         res.status(401).json({ errors, created: false });
