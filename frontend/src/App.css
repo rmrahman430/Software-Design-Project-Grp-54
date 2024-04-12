@@ -13,10 +13,11 @@ nav {
   gap: 1em;
 }
 
-li {
+.navLinks {
   display: inline-flex;
   list-style-type: none;
   padding-right: 1em;
+  gap: 1em;
 }
 
 header a {
