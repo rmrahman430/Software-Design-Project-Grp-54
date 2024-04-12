@@ -23,15 +23,13 @@ describe('login handler', () => {
     const user = { _id: 'user_id' };
     const token = 'fake_token';
 
-    // Mock dependencies (if needed)
-    userModel.login.mockResolvedValue(user); // Assuming userModel.login exists
+    userModel.login.mockResolvedValue(user); 
     jwt.sign.mockReturnValue(token);
 
     await login(req, res);
 
-    // Assertions on mocked response object
-    expect(res.statusCode).toBe(200); // Check for successful response code
-    expect(res._getJSONData()).toEqual({ user: 'user_id', created: true }); // Verify response data
+    expect(res.statusCode).toBe(200); 
+    expect(res._getJSONData()).toEqual({ user: 'user_id', created: true }); 
 
   });
 
@@ -41,7 +39,7 @@ describe('login handler', () => {
       method: 'POST',
       url: '/login',
       body: {
-        username: '', // Empty username
+        username: '', 
         password: 'password',
       },
     });
@@ -50,14 +48,11 @@ describe('login handler', () => {
 
     const user = { _id: 'user_id' };
   
-    // Mock dependencies (if needed)
-    // No need to mock userModel.login here (optional depending on implementation)
     userModel.login.mockResolvedValue(user);
   
-    await login(emptyUsernameReq, res); // Test empty username
-    expect(res.statusCode).toBe(401); // Expect unauthorized code
-    expect(res._getJSONData()).toEqual({ username: "Username field is required."}); // Verify generic error message (optional)
-
+    await login(emptyUsernameReq, res); 
+    expect(res.statusCode).toBe(401); 
+    expect(res._getJSONData()).toEqual({ username: "Username field is required."}); 
   });
 
   test('responds with error for empty password', async () => {
@@ -67,7 +62,7 @@ describe('login handler', () => {
       url: '/login',
       body: {
         username: 'admin',
-        password: '', // Empty password
+        password: '',  
       },
     });
   
@@ -75,12 +70,10 @@ describe('login handler', () => {
 
     const user = { _id: 'user_id' };
   
-    // Mock dependencies (if needed)
-    // No need to mock userModel.login here (optional depending on implementation)
     userModel.login.mockResolvedValue(user);
   
-    await login(emptyPasswordReq, res); // Test empty password
-    expect(res.statusCode).toBe(401); // Expect unauthorized code
-    expect(res._getJSONData()).toEqual({ password: "Password field is required"}); // Verify generic error message (optional)
+    await login(emptyPasswordReq, res); 
+    expect(res.statusCode).toBe(401); 
+    expect(res._getJSONData()).toEqual({ password: "Password field is required"}); 
   });
 });
