@@ -16,6 +16,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "date-fns": "^2.30.0",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.9",
     "emoji-regex": "^8.0.0",
     "escalade": "^3.1.2",
@@ -59,15 +60,28 @@
     "yargs-parser": "^21.1.1"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "@babel/core": "^7.24.4",
+    "@babel/preset-env": "^7.24.4",
+    "@babel/preset-react": "^7.24.1",
+    "concurrently": "^8.2.2",
+    "jest": "^27.5.1",
+    "mongodb-memory-server": "^9.1.8",
+    "supertest": "^6.3.4"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:coverage": "jest backend --coverage",
     "client": "cd frontend && npm start",
     "server": "cd backend && npm start",
     "dev": "concurrently \"npm run client\" \"npm run server\"",
     "backend": "cd backend && npm run jest",
     "test:all": "concurrently \"npm run client\" \"npm run backend\""
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ]
   },
   "keywords": [],
   "author": "",
