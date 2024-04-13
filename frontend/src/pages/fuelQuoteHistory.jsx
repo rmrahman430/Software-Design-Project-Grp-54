@@ -49,10 +49,10 @@ const FuelQuoteHistory = () => {
           {quotes.map((quote, index) => (
             <tr key={index}>
               <td style={thTdStyle}>{quote.gallonsRequested}</td>
-              <td style={thTdStyle}>{quote.deliveryAddress || "N/A"}</td>
+              <td style={thTdStyle}>{quote.address || "N/A"}</td>
               <td style={thTdStyle}>{quote.deliveryDate || "N/A"}</td>
               <td style={thTdStyle}>${quote.suggestedPrice ? quote.suggestedPrice.toFixed(2) : "0.00"}</td>
-              <td style={thTdStyle}>${quote.totalAmountDue ? quote.totalAmountDue.toFixed(2) : "0.00"}</td>
+              <td style={thTdStyle}>${quote.totalPrice ? quote.totalPrice.toFixed(2) : "0.00"}</td>
             </tr>
           ))}
         </tbody>

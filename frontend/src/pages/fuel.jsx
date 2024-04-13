@@ -76,6 +76,7 @@ const Fuel = () => {
           <label>Suggested Price / gallon:</label>
           <input
             type="text"
+            name="suggestPrice"
             value={`$${suggestedPrice.toFixed(2)}`}
             onChange={handleChange}
             readOnly
@@ -85,6 +86,7 @@ const Fuel = () => {
           <label>Total Amount Due:</label>
           <input
             type="text"
+            name="totalPrice"
             value={`$${totalPrice.toFixed(2)}`}
             onChange={handleChange}
             readOnly
