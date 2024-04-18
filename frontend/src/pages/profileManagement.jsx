@@ -9,7 +9,9 @@ const ProfileManagement = () => {
   const navigate = useNavigate();
   const [cookies, removeCookie] = useCookies([]);
   const [profileDetails, setProfileDetails] = useState([]);
+  const [isFetching, setIsFetching] = useState(true);
 
+  
   useEffect(() => {
     const verifyUser = async () => {
       try {
@@ -30,30 +32,37 @@ const ProfileManagement = () => {
     };
     verifyUser();
   }, [cookies, navigate, removeCookie]);
+  
 
   useEffect(() => {
+
     const fetchProfileDetails = async () => {
-        try {
-            const response = await axios.get('http://localhost:4000/profile/retrieval');
-            console.log('Response:', response);
-            setProfileDetails(response.data);
-        } catch (error) {
-            console.error('Error fetching tracking data:', error);
-        }
+      try {
+        axios.get('http://localhost:4000/profile/retrieval')
+        .then(response => {
+          const jwt = cookies.jwt;
+          const parts = jwt.split('.');
+          const payload = JSON.parse(atob(parts[1]));
+          const userId = payload.id;
+          const userData = response.data.filter(profile => profile.user === userId);
+          if(!userData) {
+            console.log("no profile match");
+          } else {
+            setProfileDetails(userData);
+            console.log(userData);
+          }
+        })
+        .catch(error => console.error('Error:', error));
+      } catch (error) {
+        console.error('Error:', error);
+      }
     };
 
     fetchProfileDetails();
-    }, []); 
+    setIsFetching(false);
+  }, [cookies]); 
 
-    const jwt = cookies.jwt;
-    const parts = jwt.split('.');
-    const header = JSON.parse(atob(parts[0]));
-    const payload = JSON.parse(atob(parts[1]));
-
-    const userId = payload.id;
-
-    const filteredProfile = profileDetails.filter(profile => profile.user === userId);
-    console.log(userId);
+  console.log("test",profileDetails._id);
 
   const logOut = () => {
     removeCookie("jwt");
@@ -68,10 +77,12 @@ const ProfileManagement = () => {
           <Card.Body>
             <div className="m-4">
               <Form>
-                {profileDetails.length > 0 && (
+                {isFetching ? (
+                  <p>Loading profile information...</p>  // Display loading message during fetch
+                ) : profileDetails.length > 0 ?(
                   <ListGroup>
-                    {filteredProfile.map(profile => (
-                      <React.Fragment key={profile.user}>
+                    {profileDetails.map((profile) => (
+                      <React.Fragment key={profile._id}>
                         <ListGroup.Item><strong>Full Name:</strong> {profile.fullname}</ListGroup.Item>
                         <ListGroup.Item><strong>Address 1:</strong> {profile.address1}</ListGroup.Item>
                         <ListGroup.Item><strong>Address 2:</strong> {profile.address2}</ListGroup.Item>
@@ -81,13 +92,13 @@ const ProfileManagement = () => {
                       </React.Fragment>
                     ))}
                   </ListGroup>
+                ) : (
+                  <p>No profile details retrieved.</p>
                 )}
-  
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
                   <Button variant="primary" type="submit" style={{ width: '30%' }} onClick={() => navigate('/updateprofile')}>
                     Update Info
                   </Button>
-  
                   <Button className="private" type="submit" onClick={logOut} style={{ width: '30%' }}>
                     Log Out
                   </Button>
