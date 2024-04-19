@@ -42,22 +42,20 @@ const handleErrors = (err) => {
     return errors;
 };
 
-module.exports.register = async (req, res, next) => {
-    try {
-        const { username, password, name, email } = req.body;
+module.exports.register = async (req, res) => {
+  try {
+    const { username, password, name, email } = req.body;
 
-        const { errors, isValid } = registerCheck({ username, password, name, email });
-
-        if (!isValid) {
-            return res.status(401).json(errors);
-        }
-
-        const user = await User.create({ username, password, name, email });
-        res.status(201).json({ user: user._id, created: true });
-    } catch (err) {
-        const errors = handleErrors(err);
-        res.status(401).json({ errors, created: false });
-    }
+    await User.create({ username, password, name, email });
+    const successMessage = `User ${username} has signed up successfully!`;
+    res.status(201).json({ message: successMessage });
+    return;
+    
+  } catch (error) {
+    res.status(401).json({ error, message: "User signup unsuccessful!"});
+    console.log(error);
+    return;
+  }
 };
 
 module.exports.login = async (req, res, next) => {
@@ -85,7 +83,7 @@ module.exports.login = async (req, res, next) => {
     }
 };
 
-module.exports.profile = async (req, res, next) => {
+module.exports.profile = async (req, res) => {
     try {
         if (Object.keys(req.body).length === 0) {
             return res.status(200).json({message: "Empty request"}); 
