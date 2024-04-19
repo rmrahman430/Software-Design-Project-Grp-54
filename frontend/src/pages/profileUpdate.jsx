@@ -8,6 +8,7 @@ import axios from 'axios';
 const ProfileUpdate = () => {
   const navigate = useNavigate();
   const [cookies, removeCookie] = useCookies([]);
+  const [isFetching, setIsFetching] = useState(true);
   const [profileData, setProfileData] = useState({
     fullname: "",
     address1: "",
@@ -65,6 +66,34 @@ const ProfileUpdate = () => {
     };
     verifyUser();
   }, [cookies, navigate, removeCookie]);
+
+  useEffect(() => {
+
+    const fetchProfileDetails = async () => {
+      try {
+        axios.get('http://localhost:4000/profile/retrieval')
+        .then(response => {
+          const jwt = cookies.jwt;
+          const parts = jwt.split('.');
+          const payload = JSON.parse(atob(parts[1]));
+          const userId = payload.id;
+          const userData = response.data.filter(profile => profile.user === userId);
+          if(!userData) {
+            console.log("no profile match");
+          } else {
+            setProfileData(userData[0]);
+            console.log("test",userData[0]);
+          }
+        })
+        .catch(error => console.error('Error:', error));
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchProfileDetails();
+    setIsFetching(false);
+  }, [cookies]);
 
   const states = ["NY", "CA", "TX", "FL", "PA"];
 
