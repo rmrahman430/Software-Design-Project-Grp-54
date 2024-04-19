@@ -57,21 +57,6 @@ UserSchema.statics.login = async function(username, password) {
     return user;
 }
 
-UserSchema.statics.register = async function(userInfo) {
-    const { username, password, name, email } = userInfo;
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        throw new Error("Invalid email format");
-    }
-    if (password.length < 8) {
-        throw new Error("Password must be at least 8 characters long");
-    }
-
-    const user = new this(userInfo);
-    await user.save();
-    return user;
-}
-
 UserSchema.methods.generateAuthToken = function() {
     const token = jwt.sign({ _id: this._id.toString() }, process.env.JWT_SECRET, {
         expiresIn: '2h'
