@@ -8,7 +8,6 @@ import axios from 'axios';
 const ProfileUpdate = () => {
   const navigate = useNavigate();
   const [cookies, removeCookie] = useCookies([]);
-  const [isFetching, setIsFetching] = useState(true);
   const [profileData, setProfileData] = useState({
     fullname: "",
     address1: "",
@@ -92,7 +91,6 @@ const ProfileUpdate = () => {
     };
 
     fetchProfileDetails();
-    setIsFetching(false);
   }, [cookies]);
 
   const states = ["NY", "CA", "TX", "FL", "PA"];
