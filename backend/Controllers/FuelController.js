@@ -1,5 +1,6 @@
 // backend\Controllers\FuelController.js
-let fuelQuotes = [];
+
+/* let fuelQuotes = [];
 
 const submitFuelQuote = (req, res) => {
   fuelQuotes.push(req.body);
@@ -13,4 +14,4 @@ const fetchFuelQuoteHistory = (req, res) => {
 module.exports = {
   submitFuelQuote,
   fetchFuelQuoteHistory
-};
+}; */

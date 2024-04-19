@@ -27,8 +27,8 @@ describe('registerController.register', () => {
     await register(req, res);
   
     // Assertions
-    expect(res.statusCode).toBe(201); // Expect successful response (created: true)
-    expect(res._getJSONData()).toEqual({ user: userId, created: true }); // Assuming _id exists on user
+    expect(res.statusCode).toBe(201); 
+    expect(res._getJSONData()).toEqual({ user: userId, created: true });
     expect(User.create).toHaveBeenCalledWith({
       username: 'johndoe',
       password: 'securepassword',
@@ -38,16 +38,15 @@ describe('registerController.register', () => {
   });
 
   
-  // Add test cases for validation errors
   it('should return a 401 (Unauthorized) for email errors', async () => {
     const req = httpMocks.createRequest({
       method: 'POST',
       url: '/register',
       body: {
-        username: 'johndoe', // Assuming some validation error
-        password: 'short', // Assuming password is too short
+        username: 'johndoe',
+        password: 'short', 
         name: 'John Doe',
-        email: 'invalid_email', // Assuming invalid email format
+        email: 'invalid_email',
       },
     });
     const userId = '12345';
@@ -56,11 +55,9 @@ describe('registerController.register', () => {
 
     User.create.mockResolvedValueOnce({ _id: userId })
 
-    // Call the register function with mocked objects
     await register(req, res);
     
-    // Assertions
-    expect(res.statusCode).toBe(401); // Expect Unauthorized response
+    expect(res.statusCode).toBe(401); 
     expect(res._getJSONData()).toEqual({ email: "Please enter a valid email address."});
     
   });
@@ -72,7 +69,7 @@ describe('registerController.register', () => {
         username: 'johndoe', 
         password: 'short', 
         name: 'John Doe',
-        email: '', // Assuming invalid email format
+        email: '', 
       },
     });
     const userId = '12345';
@@ -81,11 +78,9 @@ describe('registerController.register', () => {
 
     User.create.mockResolvedValueOnce({ _id: userId })
 
-    // Call the register function with mocked objects
     await register(req, res);
     
-    // Assertions
-    expect(res.statusCode).toBe(401); // Expect Unauthorized response
+    expect(res.statusCode).toBe(401); 
     expect(res._getJSONData()).toEqual({ email: "email field is required."});
     
   }); 
@@ -107,11 +102,9 @@ describe('registerController.register', () => {
 
     User.create.mockResolvedValueOnce({ _id: userId })
 
-    // Call the register function with mocked objects
     await register(req, res);
     
-    // Assertions
-    expect(res.statusCode).toBe(401); // Expect Unauthorized response
+    expect(res.statusCode).toBe(401); 
     expect(res._getJSONData()).toEqual({ username: "Username field is required."});
     
   });
@@ -133,11 +126,9 @@ describe('registerController.register', () => {
 
     User.create.mockResolvedValueOnce({ _id: userId })
 
-    // Call the register function with mocked objects
     await register(req, res);
     
-    // Assertions
-    expect(res.statusCode).toBe(401); // Expect Unauthorized response
+    expect(res.statusCode).toBe(401);
     expect(res._getJSONData()).toEqual({ password: "Password field is required."});
     
   });
@@ -159,11 +150,9 @@ describe('registerController.register', () => {
 
     User.create.mockResolvedValueOnce({ _id: userId })
 
-    // Call the register function with mocked objects
     await register(req, res);
     
-    // Assertions
-    expect(res.statusCode).toBe(401); // Expect Unauthorized response
+    expect(res.statusCode).toBe(401); 
     expect(res._getJSONData()).toEqual({ name: "name field is required."});
     
   });
