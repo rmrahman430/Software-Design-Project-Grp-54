@@ -29,7 +29,6 @@ app.get('/', function (req, res) {
 app.use(cookieParser());
 app.use(express.json());
 app.use("/", authRoutes);
-app.use('/', fuelRoutes);
 
 app.listen(4000, () => {
   console.log("Server Started on PORT 4000");
