@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
 import Header from './components/Header';
 import Login from './pages/login';
 import Register from './pages/registration';
@@ -20,7 +20,7 @@ function App() {
       </div>
       <Routes>
         {/* Existing routes */}
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Navigate replace to="/about-us" /> }/>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<ProfileManagement />} />

@@ -45,6 +45,7 @@
     "regenerator-runtime": "^0.14.1",
     "require-directory": "^2.1.1",
     "rxjs": "^7.8.1",
+    "serve": "^14.2.1",
     "shell-quote": "^1.8.1",
     "spawn-command": "^0.0.2",
     "string-width": "^4.2.3",
@@ -72,10 +73,12 @@
     "test": "jest",
     "test:coverage": "jest backend --coverage",
     "client": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
     "server": "cd backend && npm start",
     "dev": "concurrently \"npm run client\" \"npm run server\"",
     "backend": "cd backend && npm run jest",
-    "test:all": "concurrently \"npm run client\" \"npm run backend\""
+    "test:all": "concurrently \"npm run client\" \"npm run backend\"",
+    "prod": "concurrently \"npx serve\" \"npm run server\""
   },
   "babel": {
     "presets": [
