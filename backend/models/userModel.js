@@ -38,24 +38,13 @@ UserSchema.pre("save", async function(next) {
 });
 
 UserSchema.post('save', function(error, doc, next) {
-  if (error.name === 'MongoError' && error.code === 11000) {
+  if (error.name === 'MongoServerError' && error.code === 11000) {
       next(new Error('Username or email already exists.'));
   } else {
       next();
   }
 });
 
-UserSchema.statics.login = async function(username, password) {
-    const user = await this.findOne({ username });
-    if (!user) {
-        throw new Error("Incorrect username");
-    }
-    const auth = await bcrypt.compare(password, user.password);
-    if (!auth) {
-        throw new Error("Incorrect password");
-    }
-    return user;
-}
 
 UserSchema.methods.generateAuthToken = function() {
     const token = jwt.sign({ _id: this._id.toString() }, process.env.JWT_SECRET, {

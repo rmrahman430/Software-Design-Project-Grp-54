@@ -3,8 +3,7 @@ const Price = require("../models/pricingModel");
 const jwt = require("jsonwebtoken");
 const clientInfo = require("../models/ClientInfo");
 const profileCheck = require("../validation/profile");
-const loginCheck = require("../validation/login");
-const registerCheck = require("../validation/register")
+const bcrypt = require('bcrypt');
 
 const maxAge = 3*24*60*60;
 
@@ -58,29 +57,30 @@ module.exports.register = async (req, res) => {
   }
 };
 
-module.exports.login = async (req, res, next) => {
-    try {
-        const { username, password } = req.body;
-        
-        const { errors, isValid } = loginCheck({ username, password });
-
-        if (!isValid) {
-            console.log(errors);
-            return res.status(401).json(errors);
-        }
-        const user = await User.login( username, password );
-        const token = createToken(user._id);
-
-        res.cookie("jwt", token, {
-            withCredentials: true,
-            httpOnly: false,
-            maxAge: maxAge * 1000,
-        });
-        res.status(200).json({user: user._id, created: true})
-    } catch(err) {
-        const errors = handleErrors(err);
-        res.status(401).json({ errors, created: false });
+module.exports.login = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: "username not found"});
     }
+
+    const auth = await bcrypt.compare(password, user.password);
+    if (!auth) {
+      return res.status(400).json({ message: "Password incorrect" });
+    }
+    const token = createToken(user._id);
+
+    res.cookie("jwt", token, {
+      withCredentials: true,
+      httpOnly: false,
+      maxAge: maxAge * 1000,
+    });
+    res.status(200).json({user: user._id, message: "Login successful!"})
+  }catch(err) {
+    res.status(400).json({ err, message: "Login unsuccessful!"});
+  }
 };
 
 module.exports.profile = async (req, res) => {
@@ -132,7 +132,7 @@ module.exports.getProfile = async (req, res) => {
     }
 };
 
-module.exports.quote = async (req, res, next) => {
+module.exports.quote = async (req, res) => {
     try {
         const token = req.cookies.jwt; 
         const decodedToken = jwt.verify(token, 'singhprojectkey');
