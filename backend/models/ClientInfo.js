@@ -33,7 +33,8 @@ const clientSchema = new mongoose.Schema({
         maxlength: 2
     },
     zipcode: {
-        type: String,
+        type: Number,
+        maxlength: 5,
         required: true
     }
 });
