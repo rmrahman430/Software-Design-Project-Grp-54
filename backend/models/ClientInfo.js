@@ -27,13 +27,13 @@ const clientSchema = new mongoose.Schema({
     },
     state: {
         type: String,
-        enum: ['CA', 'TX', 'FL', 'NY', 'PA'],
+        enum: ['CA', 'TX', 'FL', 'NY', 'PA', 'FL'],
         required: true,
         minlength: 2,
         maxlength: 2
     },
     zipcode: {
-        type: Number,
+        type: String,
         maxlength: 5,
         required: true
     }

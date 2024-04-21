@@ -26,18 +26,16 @@ const ProfileUpdate = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:4000/profile/update",
-        profileData,
+        "http://localhost:4000/profile/update", {...profileData},
         { withCredentials: true }
       );
+      console.log(response.data);
       if (response.data.created) {
         toast.success("Profile created successfully!");
         window.location.reload();
       } else if (response.data.updated) {
         toast.success("Profile updated successfully!")
         navigate('/profile');
-      }else {
-        toast.error("Failed to update profile.");
       }
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -81,7 +79,6 @@ const ProfileUpdate = () => {
             console.log("no profile match");
           } else {
             setProfileData(userData[0]);
-            console.log("test",userData[0]);
           }
         })
         .catch(error => console.error('Error:', error));
@@ -93,7 +90,7 @@ const ProfileUpdate = () => {
     fetchProfileDetails();
   }, [cookies]);
 
-  const states = ["NY", "CA", "TX", "FL", "PA"];
+  const states = ["NY", "CA", "TX", "FL", "PA", "FL"];
 
   const logOut = () => {
     removeCookie("jwt");
@@ -116,7 +113,7 @@ const ProfileUpdate = () => {
                     maxLength="50"
                     required
                     name="fullname"
-                    value={profileData.fullname}
+                    value={profileData?.fullname}
                     onChange={handleChange}
                   />
                 </Form.Group>
@@ -129,7 +126,7 @@ const ProfileUpdate = () => {
                     maxLength="100"
                     required
                     name="address1"
-                    value={profileData.address1}
+                    value={profileData?.address1}
                     onChange={handleChange}
                   />
                 </Form.Group>
@@ -141,7 +138,7 @@ const ProfileUpdate = () => {
                     placeholder="Apartment, studio, or floor"
                     maxLength="100"
                     name="address2"
-                    value={profileData.address2}
+                    value={profileData?.address2}
                     onChange={handleChange}
                   />
                 </Form.Group>
@@ -154,7 +151,7 @@ const ProfileUpdate = () => {
                     maxLength="100"
                     required
                     name="city"
-                    value={profileData.city}
+                    value={profileData?.city}
                     onChange={handleChange}
                   />
                 </Form.Group>
@@ -165,7 +162,7 @@ const ProfileUpdate = () => {
                     as="select"
                     required
                     name="state"
-                    value={profileData.state}
+                    value={profileData?.state}
                     onChange={handleChange}
                   >
                     <option value="">Choose...</option>
@@ -180,15 +177,15 @@ const ProfileUpdate = () => {
                   <Form.Control
                     type="text"
                     placeholder="Zipcode"
-                    maxLength="9"
+                    maxLength="5"
                     required
                     pattern="\d{5}(-\d{4})?"
                     name="zipcode"
-                    value={profileData.zipcode}
+                    value={profileData?.zipcode}
                     onChange={handleChange}
                   />
                   <Form.Text className="text-muted">
-                    Enter a 5-digit code or a 9-digit code with a dash.
+                    Enter a 5-digit code.
                   </Form.Text>
                 </Form.Group>
 
