@@ -46,11 +46,4 @@ UserSchema.post('save', function(error, doc, next) {
 });
 
 
-UserSchema.methods.generateAuthToken = function() {
-    const token = jwt.sign({ _id: this._id.toString() }, process.env.JWT_SECRET, {
-        expiresIn: '2h'
-    });
-    return token;
-}
-
 module.exports = mongoose.model("Users", UserSchema);
