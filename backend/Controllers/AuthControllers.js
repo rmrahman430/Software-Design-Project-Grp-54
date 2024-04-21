@@ -63,24 +63,25 @@ module.exports.login = async (req, res) => {
 
 module.exports.profile = async (req, res) => {
   try {
+    // Extract user ID from JWT token
+    const token = req.cookies.jwt;
+    const decodedToken = jwt.verify(token, 'singhprojectkey');
+    const userId = decodedToken.id;
+
     if (Object.keys(req.body).length === 0) {
-      return res.status(200).json({message: "Empty request"}); 
+      return res.status(200).json({ message: "Empty request" }); 
     }
 
-    const {errors, isValid} = await validateProfileInput(req.body);
+    const { errors, isValid } = await validateProfileInput(req.body);
 
     if (!isValid) {
-      console.log("output",errors);
       return res.status(400).json(errors);
     } else {
-
-      const token = req.cookies.jwt; 
-      const decodedToken = jwt.verify(token, 'singhprojectkey');
-      const userId = decodedToken.id;
-
+      // Use userId when querying for profile
       let profile = await clientInfo.findOne({ user: userId });
 
       if (profile) {
+          // Update existing profile
           profile.fullname = req.body.fullname;
           profile.address1 = req.body.address1;
           profile.address2 = req.body.address2;
@@ -91,21 +92,22 @@ module.exports.profile = async (req, res) => {
           profile = await profile.save();
           return res.status(201).json({ created: false, profile, updated: true });
       } else {
+          // Create new profile
           profile = await clientInfo.create({ user: userId, ...req.body });
           return res.status(201).json({ created: true, profile, updated: false });
       }
     }
-  }catch(err) {
-    return res.status(401).json({message: "profile updation fail"});
+  } catch (err) {
+    return res.status(401).json({ message: "profile updation fail" });
   }
 };
 
-module.exports.getProfile = async (req, res) => {
+module.exports.getProfile = async (res) => {
   try {
     const profiles = await clientInfo.find({});
-    res.status(200).json(profiles); 
+    return res.status(200).json({profiles: profiles}); 
   } catch (err) {
-    res.status(401).json({ err});
+    return res.status(401).json({ err});
   }
 };
 

@@ -12,7 +12,7 @@ module.exports = async function validateProfileInput(data) {
     data.zipcode = !isEmpty(data.zipcode) ? data.zipcode : "";
 
     if (Validator.isEmpty(data.fullname)) {
-        errors.fullname = "Fullname is required.";
+        errors.fullname = "Fullname is required";
     }
     
 
