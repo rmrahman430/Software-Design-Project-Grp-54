@@ -42,6 +42,8 @@ const FuelQuoteHistory = () => {
           <tr>
             <th style={{ ...thTdStyle, ...thStyle }}>Gallons Requested</th>
             <th style={{ ...thTdStyle, ...thStyle }}>Delivery Address</th>
+            <th style={{ ...thTdStyle, ...thStyle }}>Delivery City</th>
+            <th style={{ ...thTdStyle, ...thStyle }}>Delivery State</th>
             <th style={{ ...thTdStyle, ...thStyle }}>Delivery Date</th>
             <th style={{ ...thTdStyle, ...thStyle }}>Price / Gallon</th>
             <th style={{ ...thTdStyle, ...thStyle }}>Total Amount Due</th>
@@ -52,6 +54,8 @@ const FuelQuoteHistory = () => {
             <tr key={index}>
               <td style={thTdStyle}>{quote.gallonsRequested}</td>
               <td style={thTdStyle}>{quote.address || "N/A"}</td>
+              <td style={thTdStyle}>{quote.city || "N/A"}</td>
+              <td style={thTdStyle}>{quote.state || "N/A"}</td>
               <td style={thTdStyle}>{moment(quotes.deliveryDate).format('YYYY-MM-DD') || "N/A"}</td>
               <td style={thTdStyle}>${quote.suggestedPrice ? quote.suggestedPrice.toFixed(2) : "0.00"}</td>
               <td style={thTdStyle}>${quote.totalPrice ? quote.totalPrice.toFixed(2) : "0.00"}</td>
