@@ -74,7 +74,7 @@ const ProfileUpdate = () => {
           const parts = jwt.split('.');
           const payload = JSON.parse(atob(parts[1]));
           const userId = payload.id;
-          const userData = response.data.filter(profile => profile.user === userId);
+          const userData = response.data.profiles.filter(profile => profile.user === userId);
           if(!userData) {
             console.log("no profile match");
           } else {
