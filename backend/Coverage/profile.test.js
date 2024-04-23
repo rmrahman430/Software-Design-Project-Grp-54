@@ -284,13 +284,20 @@ describe('profile controller', () => {
     // Mock clientInfo.find to resolve with an array of profiles
     clientInfo.find.mockResolvedValue(mockProfiles);
 
+    const mockReq = {
+      body: {
+      },
+      cookies: {
+        jwt: 'valid_jwt_token'
+      }
+    };
+
     const mockRes = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn()
     };
 
-    console.log(mockRes);
-    await getProfile(mockRes);
+    await getProfile(mockReq, mockRes);
 
     // Verify that clientInfo.find was called with an empty query object ({})
     expect(clientInfo.find).toHaveBeenCalledWith({});
