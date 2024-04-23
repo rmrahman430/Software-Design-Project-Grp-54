@@ -107,7 +107,7 @@ module.exports.getProfile = async (req, res) => {
     const profiles = await clientInfo.find({});
     return res.status(200).json({profiles: profiles}); 
   } catch (err) {
-    return res.status(401).json({ error: err});
+    return res.status(401).json({ err});
   }
 };
 
