@@ -20,6 +20,14 @@ const pricingSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    city: {
+        type: String,
+        required: true
+    },
+    state: {
+        type: String,
+        required: true
+    },
     deliveryDate: {
         type: Date, 
         required: true

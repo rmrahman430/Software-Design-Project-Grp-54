@@ -1,159 +1,235 @@
 const { register } = require('../Controllers/AuthControllers');
 const User = require('../models/userModel');
-const httpMocks = require('node-mocks-http');
 
 jest.mock('../models/userModel');
 
-describe('registerController.register', () => {
-  test('should register a new user and return a token on success', async () => {
-    const req = httpMocks.createRequest({
-      method: 'POST',
-      url: '/register',
-      body: {
-        username: 'johndoe',
-        password: 'securepassword',
-        name: 'John Doe',
-        email: 'john.doe@example.com',
-      },
-    });
-    const userId = '12345';
+describe('register function', () => {
+  let mockCreate;
+  let req;
+  let res;
 
-    const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
-  
-    // Mock the register function
-    User.create.mockResolvedValueOnce({ _id: userId })
-  
-    // Call the register function with mocked objects
+  it('should successfully register a user', async () => {
+    mockCreate = jest.fn();
+    User.create.mockImplementation(mockCreate);
+
+    req = {
+      body: {
+        username: 'test_user',
+        password: 'password123',
+        name: 'John Doe',
+        email: 'test@example.com',
+      },
+    };
+    res = {
+      status: jest.fn().mockReturnThis(), // Mock status method to chain calls
+      json: jest.fn(),
+    };
+
+    mockCreate.mockResolvedValueOnce({}); // Mock successful creation
+
     await register(req, res);
-  
-    // Assertions
-    expect(res.statusCode).toBe(201); 
-    expect(res._getJSONData()).toEqual({ user: userId, created: true });
-    expect(User.create).toHaveBeenCalledWith({
-      username: 'johndoe',
-      password: 'securepassword',
-      name: 'John Doe',
-      email: 'john.doe@example.com',
+
+    expect(mockCreate).toHaveBeenCalledWith({
+      username: req.body.username,
+      password: req.body.password,
+      name: req.body.name,
+      email: req.body.email,
     });
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith({
+      message: `User ${req.body.username} has signed up successfully!`,
+    });
+
+    jest.clearAllMocks(); // Clear mocks after the test
   });
 
+  it('should return error for password less than 8 characters', async () => {
   
-  it('should return a 401 (Unauthorized) for email errors', async () => {
-    const req = httpMocks.createRequest({
-      method: 'POST',
-      url: '/register',
+    const mockSave = jest.fn();
+    User.prototype.save = mockSave;
+  
+    const req = {
       body: {
-        username: 'johndoe',
-        password: 'short', 
+        username: 'test_user',
+        password: 'short', // Password under 8 characters
         name: 'John Doe',
-        email: 'invalid_email',
+        email: 'test@example.com',
       },
-    });
-    const userId = '12345';
-
-    const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
-
-    User.create.mockResolvedValueOnce({ _id: userId })
-
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(), // Mock status method to chain calls
+      json: jest.fn(),
+    };
+  
     await register(req, res);
-    
-    expect(res.statusCode).toBe(401); 
-    expect(res._getJSONData()).toEqual({ email: "Please enter a valid email address."});
-    
+  
+    expect(mockSave).toHaveBeenCalledTimes(0); 
+    expect(res.status).toHaveBeenCalledWith(400); // Expect bad request (400)
+    expect(res.json).toHaveBeenCalledWith({
+      password: "Password must be at least 8 characters long.", // Specific error message
+    });
   });
-  it('should return a 401 (Unauthorized) for email errors', async () => {
-    const req = httpMocks.createRequest({
-      method: 'POST',
-      url: '/register',
+  it('test for invalid email format', async () => {
+  
+    const mockSave = jest.fn();
+    User.prototype.save = mockSave;
+  
+    const req = {
       body: {
-        username: 'johndoe', 
-        password: 'short', 
+        username: 'test_user',
+        password: 'password123', // Password under 8 characters
         name: 'John Doe',
-        email: '', 
+        email: 'test',
       },
-    });
-    const userId = '12345';
-
-    const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
-
-    User.create.mockResolvedValueOnce({ _id: userId })
-
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(), // Mock status method to chain calls
+      json: jest.fn(),
+    };
+  
     await register(req, res);
-    
-    expect(res.statusCode).toBe(401); 
-    expect(res._getJSONData()).toEqual({ email: "email field is required."});
-    
-  }); 
-
-  it('should return a 401 (Unauthorized) for username errors', async () => {
-    const req = httpMocks.createRequest({
-      method: 'POST',
-      url: '/register',
-      body: {
-        username: '', 
-        password: 'short', 
-        name: 'John Doe',
-        email: 'test@email.com', 
-      },
+  
+    expect(mockSave).toHaveBeenCalledTimes(0); 
+    expect(res.status).toHaveBeenCalledWith(400); // Expect bad request (400)
+    expect(res.json).toHaveBeenCalledWith({
+      email: "Please enter a valid email address.", // Specific error message
     });
-    const userId = '12345';
-
-    const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
-
-    User.create.mockResolvedValueOnce({ _id: userId })
-
-    await register(req, res);
-    
-    expect(res.statusCode).toBe(401); 
-    expect(res._getJSONData()).toEqual({ username: "Username field is required."});
-    
   });
-
-  it('should return a 401 (Unauthorized) for password errors', async () => {
-    const req = httpMocks.createRequest({
-      method: 'POST',
-      url: '/register',
+  it('should return error for username already taken', async () => {
+    const existingUsername = 'bob';
+    const mockFindOne = jest.fn();
+    mockFindOne.mockResolvedValueOnce({ username: existingUsername }); // Mock existing user
+  
+    User.findOne = mockFindOne; // Mock User.findOne
+  
+    const req = {
       body: {
-        username: 'johndoe', 
-        password: '', 
+        username: existingUsername, // Set username to existing one
+        password: 'password123',
         name: 'John Doe',
-        email: 'test@email.com', 
+        email: 'test@example.com',
       },
-    });
-    const userId = '12345';
-
-    const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
-
-    User.create.mockResolvedValueOnce({ _id: userId })
-
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(), // Mock status method to chain calls
+      json: jest.fn(),
+    };
+  
     await register(req, res);
-    
-    expect(res.statusCode).toBe(401);
-    expect(res._getJSONData()).toEqual({ password: "Password field is required."});
-    
+  
+    expect(mockFindOne).toHaveBeenCalledWith({ username: existingUsername }); // Verify username check
+    expect(mockCreate).toHaveBeenCalledTimes(0); // User.create shouldn't be called
+    expect(res.status).toHaveBeenCalledWith(400); // Expect bad request (400)
+    expect(res.json).toHaveBeenCalledWith({
+      username: "Username is already taken.", // Specific error message
+    });
+  
+    jest.clearAllMocks(); // Clear mocks after the test
   });
-
-  it('should return a 401 (Unauthorized) for name errors', async () => {
-    const req = httpMocks.createRequest({
-      method: 'POST',
-      url: '/register',
+  it('test for empty email ', async () => {
+  
+    const mockSave = jest.fn();
+    User.prototype.save = mockSave;
+  
+    const req = {
       body: {
-        username: 'johndoe', 
-        password: 'short', 
+        username: 'test_user',
+        password: 'password123', // Password under 8 characters
+        name: 'John Doe',
+        email: '',
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(), // Mock status method to chain calls
+      json: jest.fn(),
+    };
+  
+    await register(req, res);
+  
+    expect(mockSave).toHaveBeenCalledTimes(0); 
+    expect(res.status).toHaveBeenCalledWith(400); // Expect bad request (400)
+    expect(res.json).toHaveBeenCalledWith({
+      email: "Email field is required.", // Specific error message
+    });
+  });
+  it('test for empty username', async () => {
+  
+    const mockSave = jest.fn();
+    User.prototype.save = mockSave;
+  
+    const req = {
+      body: {
+        username: '',
+        password: 'password123', // Password under 8 characters
+        name: 'John Doe',
+        email: 'test@example.com',
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(), // Mock status method to chain calls
+      json: jest.fn(),
+    };
+  
+    await register(req, res);
+  
+    expect(mockSave).toHaveBeenCalledTimes(0); 
+    expect(res.status).toHaveBeenCalledWith(400); // Expect bad request (400)
+    expect(res.json).toHaveBeenCalledWith({
+      username: "Username field is required.", // Specific error message
+    });
+  });
+  it('test for empty password', async () => {
+  
+    const mockSave = jest.fn();
+    User.prototype.save = mockSave;
+  
+    const req = {
+      body: {
+        username: 'test_user',
+        password: '', // Password under 8 characters
+        name: 'John Doe',
+        email: 'test@example.com',
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(), // Mock status method to chain calls
+      json: jest.fn(),
+    };
+  
+    await register(req, res);
+  
+    expect(mockSave).toHaveBeenCalledTimes(0); 
+    expect(res.status).toHaveBeenCalledWith(400); // Expect bad request (400)
+    expect(res.json).toHaveBeenCalledWith({
+      password: "Password field is required.", // Specific error message
+    });
+  });
+  it('test for empty name', async () => {
+  
+    const mockSave = jest.fn();
+    User.prototype.save = mockSave;
+  
+    const req = {
+      body: {
+        username: 'test_user',
+        password: 'password123', // Password under 8 characters
         name: '',
-        email: 'test@email.com', 
+        email: 'test@example.com',
       },
-    });
-    const userId = '12345';
-
-    const res = httpMocks.createResponse({ eventEmitter: require('events').EventEmitter });
-
-    User.create.mockResolvedValueOnce({ _id: userId })
-
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(), // Mock status method to chain calls
+      json: jest.fn(),
+    };
+  
     await register(req, res);
-    
-    expect(res.statusCode).toBe(401); 
-    expect(res._getJSONData()).toEqual({ name: "name field is required."});
-    
+  
+    expect(mockSave).toHaveBeenCalledTimes(0); 
+    expect(res.status).toHaveBeenCalledWith(400); // Expect bad request (400)
+    expect(res.json).toHaveBeenCalledWith({
+      name: "Name field is required.", // Specific error message
+    });
   });
+
 });
+

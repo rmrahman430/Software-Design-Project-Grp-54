@@ -1,7 +1,8 @@
 const Validator = require("validator");
 const isEmpty = require("is-empty");
+const clientInfo = require("../models/ClientInfo");
 
-module.exports = function validateRegisterInput(data) {
+module.exports = async function validateProfileInput(data) {
     let errors = {};
 
     data.fullname = !isEmpty(data.fullname) ? data.fullname : "";
@@ -10,10 +11,8 @@ module.exports = function validateRegisterInput(data) {
     data.state = !isEmpty(data.state) ? data.state : "";
     data.zipcode = !isEmpty(data.zipcode) ? data.zipcode : "";
 
-
-
     if (Validator.isEmpty(data.fullname)) {
-        errors.fullname = "Fullname is required.";
+        errors.fullname = "Fullname is required";
     }
     
 
