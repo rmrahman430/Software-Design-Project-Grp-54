@@ -33,6 +33,7 @@ const ProfileUpdate = () => {
       if (response.data.created) {
         toast.success("Profile created successfully!");
         window.location.reload();
+        navigate('/profile');
       } else if (response.data.updated) {
         toast.success("Profile updated successfully!")
         navigate('/profile');
