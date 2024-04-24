@@ -5,6 +5,7 @@ import Register from './pages/registration';
 import ProfileManagement from './pages/profileManagement';
 import ProfileUpdate from './pages/profileUpdate';
 import FuelQuote from './pages/fuel';
+import Report from './pages/report'
 import FuelQuoteHistory from './pages/fuelQuoteHistory';
 import AboutSection from './components/AboutSection';
 import "./App.css";
@@ -28,6 +29,7 @@ function App() {
         <Route path="/fuel-quote" element={<FuelQuote />} />
         <Route path="/fuel-quote-history" element={<FuelQuoteHistory quotes={[]} />} />
         <Route path="/about-us" element={<AboutSection />} />
+        <Route path="/report" element={<Report />} />
 
       </Routes>
     </Router>
