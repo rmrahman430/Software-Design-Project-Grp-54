@@ -127,18 +127,18 @@ module.exports.getProfile = async (req, res) => {
 };
 
 module.exports.quote = async (req, res) => {
-    try {
-        const token = req.cookies.jwt; 
-        const decodedToken = jwt.verify(token, 'singhprojectkey');
-        const userId = decodedToken.id;
+  try {
+      const token = req.cookies.jwt; 
+      const decodedToken = jwt.verify(token, 'singhprojectkey');
+      const userId = decodedToken.id;
 
-        const { user, gallonsRequested, suggestedPrice, address, deliveryDate, totalPrice } = req.body;
-        const quote = await Price.create({ user: userId, ...req.body });
-        res.status(201).json({ created: false, quote, updated: true });
-    } catch (err) {
-        res.status(401).json({ err});
-    }
-  };
+      const { user, gallonsRequested, suggestedPrice, address, deliveryDate, totalPrice } = req.body;
+      const quote = await Price.create({ user: userId, ...req.body });
+      res.status(201).json({ created: false, quote, updated: true });
+  } catch (err) {
+      res.status(401).json({ err});
+  }
+};
 
 module.exports.getFuelHistory = async (req, res) => {
     try {
