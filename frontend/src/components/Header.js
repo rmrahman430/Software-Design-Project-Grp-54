@@ -4,13 +4,15 @@ import axios from 'axios';
 
 const Header = () => {
     const [loggedIn, setLoggedIn] = useState(false);
+    const [admin, setAdmin] = useState(false);
     const [loading, setLoading] = useState(true); // Add loading state
 
     useEffect(() => {
         const verifyUser = async () => {
             try {
-                const { data } = await axios.post("http://localhost:4000/profile", {}, { withCredentials: true });
-                if (data.status) {
+                const { data } = await axios.get("http://localhost:4000/checkAdmin", { withCredentials: true });
+                setAdmin(data.user.admin);
+                if (data.user) {
                     setLoggedIn(true);
                 } else {
                     setLoggedIn(false);
@@ -23,7 +25,7 @@ const Header = () => {
             }
         };
         verifyUser();
-    }, [loggedIn]); // Add loggedIn as dependency
+    }, []); // Add loggedIn as dependency
 
     if (loading) {
         return <div>Loading...</div>;
@@ -35,10 +37,15 @@ const Header = () => {
         
             <nav>
                 <ul>
-                    {loggedIn ? (
+                    {loggedIn && !admin ?  (
                         <li className="navLinks">
                             <Link to="/fuel-quote">Fuel Quote</Link>
                             <Link to="/fuel-quote-history">Fuel Quote History</Link>
+                            <Link to="/profile">Profile</Link>
+                        </li>
+                    ) : loggedIn && admin ? ( 
+                        <li className="navLinks">
+                            <Link to="/report"> Report </Link>
                             <Link to="/profile">Profile</Link>
                         </li>
                     ) : (

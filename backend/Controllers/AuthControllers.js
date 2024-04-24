@@ -102,6 +102,21 @@ module.exports.profile = async (req, res) => {
   }
 };
 
+module.exports.checkAdmin = async (req, res) => {
+  try {
+    const token = req.cookies.jwt;
+    const decodedToken = jwt.verify(token, 'singhprojectkey');
+    const userId = decodedToken.id;
+
+    const user = await User.findById(userId);
+
+    return res.status(200).json({ user })
+
+  } catch (err) {
+    return res.status(401).json({ message: 'user not found' });
+  }
+};
+
 module.exports.getProfile = async (req, res) => {
   try {
     const profiles = await clientInfo.find({});
@@ -136,4 +151,22 @@ module.exports.getFuelHistory = async (req, res) => {
     } catch (err) {
         res.status(401).json({ err});
     }
+};
+
+module.exports.getAllFuelHistory = async (req, res) => {
+  try {
+    const history = await Price.aggregate([
+        {
+            $lookup: {
+                from: 'users', 
+                localField: 'user', 
+                foreignField: '_id', 
+                as: 'users' 
+            }
+        },
+    ]);
+      res.status(200).json(history); 
+  } catch (err) {
+      res.status(401).json({ err });
+  }
 };
